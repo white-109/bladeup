@@ -1,9 +1,644 @@
-<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>경험치 계산기</title><style>body{font-family:Arial,sans-serif;background:#eef2ff;padding:30px}.c{width:420px;margin:auto;background:#fff;padding:25px;border-radius:14px;box-shadow:0 4px 10px rgba(0,0,0,0.15)}h2{text-align:center;margin-bottom:25px;color:#333}label{margin-top:12px;font-weight:bold;display:block}select,input{width:100%;padding:10px;margin-top:6px;border:1px solid #bbb;border-radius:8px}button{width:100%;margin-top:20px;padding:12px;background:#4A6CFF;border:none;color:#fff;font-size:16px;border-radius:8px;cursor:pointer}button:hover{background:#3a55d8}.r{margin-top:25px;background:#f3f6ff;padding:15px;border-radius:12px;font-size:15px;line-height:1.65}</style></head><body><div class="c"><h2>경험치 계산기</h2><label>① 몬스터 경험치 선택</label><select id="a"><option value="6000">6000</option><option value="9000">9000</option><option value="12000">12000</option><option value="15000">15000</option></select><label>② 방패 강화 단계 (5강부터 경험치 증가)</label><select id="b"><option value="0">--- 선택 ---</option><option value="5">5강 (10%)</option><option value="6">6강 (20%)</option><option value="7">7강 (30%)</option><option value="8">8강 (40%)</option><option value="9">9강 (50%)</option><option value="10">10강 (60%)</option></select><button onclick="z()">계산하기</button><div class="r" id="x"></div></div><script>
-function y(q){let w=q*100;if(w<.0001)return"0%";return Number.isInteger(w)?w+"%":w.toFixed(1)+"%"}function z(){let m=Number(document.getElementById("a").value),n=Number(document.getElementById("b").value);if(n===0){document.getElementById("x").innerHTML="강화 단계를 선택해주세요.";return;}let o=m/1.5,p=(n-4)*.1;if(p<0)p=0;let r=1+.5+p,s=Math.floor(o*r);document.getElementById("x").innerHTML="<b>최종 계산 결과</b><br>선택 몬스터 경험치(표기): <b>"+m+"</b><br>원경험치(Base EXP): <b>"+o.toFixed(0)+"</b><br>장비 경험치 보너스: <b>"+y(p)+"</b><br>PK존 보너스: <b>50%</b><br><br>▶ <b>획득 경험치: "+s+"</b><br><br><b>경험치 공식</b><br>표기 경험치 = 원경험치 × 1.5 (PK 50% 포함)<br>최종 경험치 = 원경험치 × (1 + PK + 장비보너스)<br>= 원경험치 × (1 + 0.5 + 장비%)<br>= 원경험치 × "+r.toFixed(2)}</script></body>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>도전검 키우기 도구 모음</title>
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background:#eef2ff;
+            padding:30px;
+            margin:0;
+        }
 
-<div style="text-align:center; margin-top:20px; color:#666; font-size:13px;">
-    by. Pet(소매치기)
+        /* 상단 우측 제작자 표시 */
+        .author-tag{
+            position:fixed;
+            top:10px;
+            right:18px;
+            font-size:12px;
+            color:#888;
+            z-index:100;
+            pointer-events:none;
+        }
+
+        /* 공통 카드 스타일 */
+        .card{
+            background:#fff;
+            padding:25px;
+            border-radius:14px;
+            box-shadow:0 4px 10px rgba(0,0,0,0.15);
+            margin-bottom:30px;
+        }
+
+        /* 상단 영역(리뷰 + 경험치 계산기) */
+        .top-area{
+            position:relative;
+            max-width:1100px;
+            margin:40px auto 30px;
+            min-height:320px;
+        }
+
+        /* 경험치 계산기 카드: 항상 중앙 */
+        .exp-card{
+            width:420px;
+            margin:0 auto;
+            box-sizing:border-box;
+        }
+
+        h2{
+            text-align:center;
+            margin-bottom:20px;
+            color:#333;
+        }
+        label{
+            margin-top:12px;
+            font-weight:bold;
+            display:block;
+            margin-bottom:5px;
+        }
+        select,input{
+            width:100%;
+            padding:10px;
+            margin-top:6px;
+            border:1px solid #bbb;
+            border-radius:8px;
+            box-sizing:border-box;
+        }
+        button{
+            width:100%;
+            margin-top:20px;
+            padding:12px;
+            background:#4A6CFF;
+            border:none;
+            color:#fff;
+            font-size:16px;
+            border-radius:8px;
+            cursor:pointer;
+        }
+        button:hover{
+            background:#3a55d8;
+        }
+        .r{
+            margin-top:15px;
+            background:#f3f6ff;
+            padding:12px;
+            border-radius:12px;
+            font-size:14px;
+            line-height:1.65;
+            max-height:220px;
+            overflow-y:auto;
+            white-space:normal;
+            word-wrap:break-word;
+        }
+
+        /* 게임 이미지 + 리뷰 버튼 : 경험치 카드 왼쪽에 띄우기 */
+        .game-promo{
+            position:absolute;
+            left:0;
+            top:50%;
+            transform:translateY(-50%);
+            width:260px;
+            background:#ffffffaa;
+            padding:20px;
+            border-radius:14px;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            box-shadow:0 4px 12px rgba(0,0,0,0.12);
+            box-sizing:border-box;
+        }
+        .game-img{
+            width:200px;
+            border-radius:12px;
+            margin-bottom:15px;
+        }
+        .review-btn{
+            display:inline-block;
+            background:#4A6CFF;
+            color:#fff;
+            font-weight:bold;
+            padding:10px 14px;
+            border-radius:8px;
+            text-decoration:none;
+            font-size:14px;
+            text-align:center;
+            width:100%;
+            box-sizing:border-box;
+            transition:0.2s;
+        }
+        .review-btn:hover{
+            background:#3a55d8;
+        }
+
+        /* 상자 시뮬레이터 카드 */
+        .sim-card{
+            max-width:1250px;
+            margin:0 auto 40px;
+            box-sizing:border-box;
+        }
+
+        /* 상자 시뮬레이터 레이아웃: 좌(누적) / 중(시뮬) / 우(확률) */
+        .layout-3col{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:20px;
+        }
+        .left-col,
+        .mid-col,
+        .right-col{
+            width:32%;
+            box-sizing:border-box;
+        }
+
+        .accumBox{
+            background:#fff7e6;
+            border-radius:12px;
+            padding:12px;
+            border:1px solid #ffdf9e;
+            font-size:14px;
+            line-height:1.6;
+            max-height:450px;
+            overflow-y:auto;
+            white-space:normal;
+            margin-bottom:12px;
+        }
+        .probBox{
+            background:#f9fafc;
+            border-radius:12px;
+            padding:12px;
+            font-size:13px;
+            line-height:1.6;
+            border:1px solid #dde3f5;
+            max-height:450px;
+            overflow-y:auto;
+        }
+        .btn-row{
+            display:flex;
+            gap:8px;
+            margin-top:12px;
+        }
+        .btn-row button{
+            flex:1;
+            margin-top:0;
+        }
+        .yellow-highlight{
+            background:#ffeb3b;
+            padding:0 4px;
+            border-radius:4px;
+        }
+
+        /* 반응형(모바일) 처리 */
+        @media (max-width: 900px){
+            .top-area{
+                min-height:0;
+            }
+            .game-promo{
+                position:static;
+                transform:none;
+                margin:0 auto 20px;
+            }
+            .layout-3col{
+                flex-wrap:wrap;
+            }
+            .left-col,
+            .mid-col,
+            .right-col{
+                width:100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="author-tag">by . Pet(소매치기)</div>
+
+<!-- 상단: 리뷰(왼쪽에 띄움) + 경험치 계산기(정중앙) -->
+<div class="top-area">
+
+    <!-- 게임 이미지 + 리뷰 버튼 (왼쪽에 떠 있음) -->
+    <div class="game-promo">
+        <img src="https://play-lh.googleusercontent.com/AHNGFcD7v94xf87iiEpqeFt2L4zmGz3F9LqvGv11BtugY9DenVIdGSoQ4HKV9yZFxlR16gWlo70Xyy4mu0e4FA=w240-h480-rw"
+             class="game-img" alt="도전검 키우기">
+        <a href="https://play.google.com/store/apps/details?id=com.embris.bladeup"
+           target="_blank"
+           class="review-btn">
+            ⭐ 별 5개 리뷰하러 가기
+        </a>
+    </div>
+
+    <!-- 경험치 계산기(중앙) -->
+    <div class="card exp-card">
+        <h2>경험치 계산기</h2>
+
+        <label>① 몬스터 경험치 선택</label>
+        <select id="a">
+            <option value="6000" selected>6000</option>
+            <option value="9000">9000</option>
+            <option value="12000">12000</option>
+            <option value="15000">15000</option>
+        </select>
+
+        <label>② 방패 강화 단계 (5강부터 경험치 증가)</label>
+        <select id="b">
+            <option value="0" selected>--- 선택 ---</option>
+            <option value="5">5강 (10%)</option>
+            <option value="6">6강 (20%)</option>
+            <option value="7">7강 (30%)</option>
+            <option value="8">8강 (40%)</option>
+            <option value="9">9강 (50%)</option>
+            <option value="10">10강 (60%)</option>
+        </select>
+
+        <button onclick="z()">계산하기</button>
+
+        <div class="r" id="x"></div>
+    </div>
 </div>
+
+<!-- 하단: 상자 시뮬레이터 (왼:누적 / 중:시뮬 / 오른쪽:확률) -->
+<div class="card sim-card">
+    <h2>상자 시뮬레이터 (무기 / 방어구 / 장신구)</h2>
+
+    <div class="layout-3col">
+
+        <!-- LEFT : 누적 결과 -->
+        <div class="left-col">
+            <label>누적 결과</label>
+            <div class="accumBox" id="accumBox">아직 없음</div>
+            <button onclick="resetAccum()">누적 초기화</button>
+        </div>
+
+        <!-- MID : 시뮬 UI -->
+        <div class="mid-col">
+            <label>부위 선택</label>
+            <select id="partSelect" onchange="onPartChange()">
+                <option value="weapon">무기</option>
+                <option value="armor">방어구</option>
+                <option value="accessory">장신구</option>
+            </select>
+
+            <label>상자 등급 선택</label>
+            <select id="gradeSelect" onchange="updateProbBox()">
+                <option value="D">D 등급 박스</option>
+                <option value="C">C 등급 박스</option>
+                <option value="B">B 등급 박스</option>
+                <option value="A">A 등급 박스</option>
+            </select>
+
+            <div class="btn-row">
+                <button onclick="openBox(1)">1회</button>
+                <button onclick="openBox(10)">10회</button>
+                <button onclick="openBox(100)">100회</button>
+            </div>
+
+            <div class="r" id="boxResult"></div>
+        </div>
+
+        <!-- RIGHT : 확률표 -->
+        <div class="right-col">
+            <div class="probBox" id="probBox"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+/* ========== 경험치 계산기 ========== */
+function y(q){
+    let w = q * 100;
+    if (w < 0.0001) return "0%";
+    return Number.isInteger(w) ? w + "%" : w.toFixed(1) + "%";
+}
+function z(){
+    let m = Number(document.getElementById("a").value); // 표기 경험치
+    let n = Number(document.getElementById("b").value); // 방패 강화 단계
+
+    if (n === 0) {
+        document.getElementById("x").innerHTML = "강화 단계를 선택해주세요.";
+        return;
+    }
+
+    // 표기 경험치 = 원경험치 × 1.5 (PK 50% 포함)
+    let o = m / 1.5; // 원경험치(Base EXP)
+
+    // 방패 강화 % (5강=10% → (5-4)*0.1)
+    let p = (n - 4) * 0.1;
+    if (p < 0) p = 0;
+
+    // 최종 배율 = 1 + PK(0.5) + 장비보너스
+    let r = 1 + 0.5 + p;
+
+    // 최종 획득 경험치 (내림)
+    let s = Math.floor(o * r);
+
+    document.getElementById("x").innerHTML =
+        "<b> 최종 계산 결과</b><br>" +
+        "선택 몬스터 경험치(표기): <b>" + m + "</b><br>" +
+        "원경험치(Base EXP): <b>" + o.toFixed(0) + "</b><br>" +
+        "장비 경험치 보너스: <b>" + y(p) + "</b><br>" +
+        "PK존 보너스: <b>50%</b><br><br>" +
+        "> <b>획득 경험치: " + s + "</b><br><br>" +
+        "<b> 경험치 공식</b><br>" +
+        "표기 경험치 = 원경험치 × 1.5 (PK 50% 포함)<br>" +
+        "최종 경험치 = 원경험치 × (1 + PK + 장비보너스)<br>" +
+        "= 원경험치 × (1 + 0.5 + 장비%)<br>" +
+        "= 원경험치 × " + r.toFixed(2);
+}
+
+/* ========== 상자 시뮬레이터 ========== */
+// 무기 확률
+const weaponRates = {
+    "D": {
+        "X+":0.000100,
+        "X":0.000200,
+        "SSS+":0.000500,
+        "SSS":0.000800,
+        "SS+":0.001000,
+        "SS":0.002000,
+        "S+":0.010000,
+        "S":0.015000,
+        "A+":0.030000,
+        "A":0.050000,
+        "B":0.070000,
+        "C":0.090000,
+        "D":0.111200,
+        "E":0.223200,
+        "F":0.396000
+    },
+    "C": {
+        "X+":0.000200,
+        "X":0.000500,
+        "SSS+":0.001000,
+        "SSS":0.002000,
+        "SS+":0.003000,
+        "SS":0.004000,
+        "S+":0.020000,
+        "S":0.025000,
+        "A+":0.050000,
+        "A":0.070000,
+        "B":0.090000,
+        "C":0.100000,
+        "D":0.148800,
+        "E":0.173200,
+        "F":0.312300
+    },
+    "B": {
+        "X+":0.005000,
+        "X":0.010000,
+        "SSS+":0.013000,
+        "SSS":0.016000,
+        "SS+":0.020000,
+        "SS":0.021000,
+        "S+":0.048500,
+        "S":0.062300,
+        "A+":0.112100,
+        "A":0.123100,
+        "B":0.082200,
+        "C":0.092000,
+        "D":0.101400,
+        "E":0.112300,
+        "F":0.181100
+    },
+    "A": {
+        "X+":0.015000,
+        "X":0.023000,
+        "SSS+":0.030000,
+        "SSS":0.032000,
+        "SS+":0.042000,
+        "SS":0.052100,
+        "S+":0.108500,
+        "S":0.142300,
+        "A+":0.101100,
+        "A":0.113200,
+        "B":0.097200,
+        "C":0.056300,
+        "D":0.053200,
+        "E":0.072100,
+        "F":0.062000
+    }
+};
+
+// 방어구
+const armorRates = {
+    "D": {
+        "X":0.0001,"SSS":0.0005,"SS":0.0010,"S":0.0030,"A":0.0130,
+        "B":0.0320,"C":0.0818,"D":0.1721,"E":0.3212,"F":0.3753
+    },
+    "C": {
+        "X":0.0005,"SSS":0.0030,"SS":0.0030,"S":0.0080,"A":0.0292,
+        "B":0.0920,"C":0.1232,"D":0.2167,"E":0.2123,"F":0.3121
+    },
+    "B": {
+        "X":0.0050,"SSS":0.0100,"SS":0.0130,"S":0.0350,"A":0.0750,
+        "B":0.1540,"C":0.1572,"D":0.1523,"E":0.1752,"F":0.2233
+    },
+    "A": {
+        "X":0.0150,"SSS":0.0230,"SS":0.0450,"S":0.0923,"A":0.1962,
+        "B":0.1802,"C":0.1213,"D":0.1079,"E":0.1120,"F":0.1071
+    }
+};
+
+// 장신구
+const accessoryRates = {
+    "D": {
+        "X":0.0001,"S":0.0010,"A":0.0030,"B":0.0240,"C":0.1003,
+        "D":0.1602,"E":0.3002,"F":0.4112
+    },
+    "C": {
+        "X":0.0005,"S":0.0015,"A":0.0100,"B":0.0432,"C":0.1552,
+        "D":0.2443,"E":0.2232,"F":0.3221
+    },
+    "B": {
+        "X":0.0050,"S":0.0100,"A":0.0250,"B":0.1211,"C":0.1732,
+        "D":0.1922,"E":0.2121,"F":0.2614
+    },
+    "A": {
+        "X":0.0150,"S":0.0230,"A":0.0480,"B":0.2221,"C":0.1896,
+        "D":0.1632,"E":0.1821,"F":0.1570
+    }
+};
+
+const ratesByPart = {
+    weapon: weaponRates,
+    armor: armorRates,
+    accessory: accessoryRates
+};
+
+const gradeOrders = {
+    weapon: ["X+","X","SSS+","SSS","SS+","SS","S+","S","A+","A","B","C","D","E","F"],
+    armor:  ["X","SSS","SS","S","A","B","C","D","E","F"],
+    accessory: ["X","S","A","B","C","D","E","F"]
+};
+
+const partLabel = {
+    weapon: "무기",
+    armor: "방어구",
+    accessory: "장신구"
+};
+
+// 누적 데이터
+let accum = {};
+let boxCount = { D:0, C:0, B:0, A:0 };
+
+// Helper
+function highlight(item){
+    if(item==="X+" || item==="X"){
+        return `<span class="yellow-highlight"><b>${item}</b></span>`;
+    }
+    return `<b>${item}</b>`;
+}
+function formatPercent(v){
+    return (v*100).toFixed(3).replace(/0+$/,"").replace(/\.$/,"") + "%";
+}
+function getCurrentPart(){
+    return document.getElementById("partSelect").value;
+}
+function getCurrentGrade(){
+    return document.getElementById("gradeSelect").value;
+}
+
+// 부위 변경 시
+function onPartChange(){
+    resetAccum();
+    updateProbBox();
+    document.getElementById("boxResult").innerHTML = "";
+}
+
+// 상자 열기
+function openBox(times){
+    const part  = getCurrentPart();
+    const grade = getCurrentGrade();
+    const table = ratesByPart[part][grade];
+
+    const entries = Object.entries(table);
+    const totalProb = entries.reduce((sum, [,v]) => sum + v, 0);
+    const results = [];
+
+    for(let i=0;i<times;i++){
+        let r = Math.random() * totalProb;
+        let sum = 0;
+        for(let [it, p] of entries){
+            sum += p;
+            if(r <= sum){
+                results.push(it);
+                break;
+            }
+        }
+    }
+
+    updateInstant(results, part);
+    updateAccum(results, grade, part, times);
+}
+
+// 이번 결과 표시
+function updateInstant(arr, part){
+    const order = gradeOrders[part];
+    let count = {};
+    arr.forEach(v=>{
+        if(!count[v]) count[v]=0;
+        count[v]++;
+    });
+
+    let html = "<b>이번 결과</b><br><br>";
+
+    const specials = [];
+    if(order.includes("X+")) specials.push("X+");
+    if(order.includes("X"))  specials.push("X");
+
+    specials.forEach(g=>{
+        if(count[g]) html += `${highlight(g)} : ${count[g]}개<br>`;
+    });
+    if (specials.some(g=>count[g])) html += "<br>";
+
+    let line = "";
+    order.filter(g=>!specials.includes(g)).forEach(g=>{
+        if(count[g]) line += `${highlight(g)}:${count[g]}개 `;
+    });
+
+    html += line.trim();
+    document.getElementById("boxResult").innerHTML = html;
+}
+
+// 누적 결과 표시
+function updateAccum(arr, grade, part, times){
+    const order = gradeOrders[part];
+
+    arr.forEach(v=>{
+        if(!accum[v]) accum[v]=0;
+        accum[v]++;
+    });
+
+    boxCount[grade] += times;
+
+    let html = "<b>누적 결과</b><br><br>";
+
+    html += "<b>누적 깐 상자 수</b><br>";
+    html += `D : ${boxCount.D}개&nbsp;&nbsp;`;
+    html += `C : ${boxCount.C}개&nbsp;&nbsp;`;
+    html += `B : ${boxCount.B}개&nbsp;&nbsp;`;
+    html += `A : ${boxCount.A}개<br><br>`;
+
+    const specials = [];
+    if(order.includes("X+")) specials.push("X+");
+    if(order.includes("X"))  specials.push("X");
+
+    specials.forEach(g=>{
+        if(accum[g]) html += `${highlight(g)} : ${accum[g]}개<br>`;
+    });
+    if (specials.some(g=>accum[g])) html += "<br>";
+
+    let line = "";
+    order.filter(g=>!specials.includes(g)).forEach(g=>{
+        if(accum[g]) line += `${highlight(g)}:${accum[g]}개 `;
+    });
+
+    if(line==="") line = "아직 없음";
+
+    html += line.trim();
+    document.getElementById("accumBox").innerHTML = html;
+}
+
+// 초기화
+function resetAccum(){
+    accum = {};
+    boxCount = { D:0, C:0, B:0, A:0 };
+    document.getElementById("accumBox").innerHTML = "아직 없음";
+}
+
+// 확률표 표시
+function updateProbBox(){
+    const part  = getCurrentPart();
+    const grade = getCurrentGrade();
+    const table = ratesByPart[part][grade];
+    const order = gradeOrders[part];
+
+    let html = `<b>[${partLabel[part]} ${grade} 등급 상자 확률]</b><br><br>`;
+
+    const specials = [];
+    if(order.includes("X+")) specials.push("X+");
+    if(order.includes("X"))  specials.push("X");
+
+    specials.forEach(g=>{
+        if(table[g] !== undefined){
+            html += `${highlight(g)} : ${formatPercent(table[g])}<br>`;
+        }
+    });
+    if (specials.some(g => table[g] !== undefined)) html += "<br>";
+
+    order.filter(g=>!specials.includes(g)).forEach(g=>{
+        if(table[g] !== undefined){
+            html += `${highlight(g)} : ${formatPercent(table[g])}<br>`;
+        }
+    });
+
+    document.getElementById("probBox").innerHTML = html;
+}
+
+// 초기 세팅
+updateProbBox();
+</script>
+
+</body>
 </html>
-
-
