@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>상자 시뮬레이터</title>
+
+<style>
+    body{
+        font-family:Arial, sans-serif;
+        background:#eef2ff;
+        padding:30px;
+    }
+    .c{
+        width:1250px;
+        margin:auto;
+        background:#fff;
+        padding:25px;
+        border-radius:14px;
+        box-shadow:0 4px 10px rgba(0,0,0,0.15);
+    }
+    h2{
+        text-align:center;
+        margin-bottom:20px;
+    }
+
+    /* 3단 레이아웃 */
+    .layout-3col{
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:20px;
+    }
+
+    .left-col{
+        width:28%;
+    }
+    .mid-col{
+        width:42%;
+    }
+    .right-col{
+        width:28%;
+    }
+
+    /* 박스 스타일 */
+    .accumBox{
+        background:#fff7e6;
+        border-radius:12px;
+        padding:12px;
+        border:1px solid #ffdf9e;
+        font-size:14px;
+        line-height:1.6;
+        max-height:450px;
+        overflow-y:auto;
+        white-space:normal;
+        margin-bottom:12px;
+    }
+
+    .probBox{
+        background:#f9fafc;
+        border-radius:12px;
+        padding:12px;
+        font-size:13px;
+        line-height:1.6;
+        border:1px solid #dde3f5;
+        max-height:450px;
+        overflow-y:auto;
+    }
+
+    /* 중앙 UI */
+    label{
+        display:block;
+        font-weight:bold;
+        margin-top:12px;
+        margin-bottom:5px;
+    }
+    select, button{
+        width:100%;
+        padding:10px;
+        margin-top:5px;
+        border-radius:8px;
+        border:1px solid #bbb;
+        box-sizing:border-box;
+    }
+    button{
+        background:#4A6CFF;
+        color:white;
+        font-weight:bold;
+        cursor:pointer;
+        margin-top:12px;
+    }
+    button:hover{
+        background:#3a55d8;
+    }
+
+    .btn-row{
+        display:flex;
+        gap:8px;
+        margin-top:12px;
+    }
+    .btn-row button{
+        flex:1;
+        margin-top:0;
+    }
+
+    .r{
+        margin-top:15px;
+        background:#f3f6ff;
+        padding:12px;
+        border-radius:12px;
+        font-size:14px;
+        line-height:1.65;
+        max-height:180px;
+        overflow-y:auto;
+        white-space:normal;
+        word-wrap:break-word;
+    }
+
+    .yellow-highlight{
+        background:#ffeb3b;
+        padding:0 4px;
+        border-radius:4px;
+    }
+
+</style>
+</head>
+
+<body>
+
+<div class="c">
+    <h2>상자 시뮬레이터 (무기 전용)</h2>
+
+    <!-- 3단 레이아웃 -->
+    <div class="layout-3col">
+
+        <!-- LEFT : 누적 -->
+        <div class="left-col">
+            <label>누적 결과</label>
+            <div class="accumBox" id="accumBox">아직 없음</div>
+            <button onclick="resetAccum()">누적 초기화</button>
+        </div>
+
+        <!-- MID : 시뮬 UI -->
+        <div class="mid-col">
+            <label>부위 선택</label>
+            <select id="partSelect">
+                <option value="weapon">무기</option>
+            </select>
+
+            <label>상자 등급 선택</label>
+            <select id="gradeSelect" onchange="updateProbBox()">
+                <option value="D">D 등급 박스</option>
+                <option value="C">C 등급 박스</option>
+                <option value="B">B 등급 박스</option>
+                <option value="A">A 등급 박스</option>
+            </select>
+
+            <div class="btn-row">
+                <button onclick="openBox(1)">1회</button>
+                <button onclick="openBox(10)">10회</button>
+                <button onclick="openBox(100)">100회</button>
+            </div>
+
+            <div class="r" id="boxResult"></div>
+        </div>
+
+        <!-- RIGHT : 확률표 -->
+        <div class="right-col">
+            <div class="probBox" id="probBox"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// ========== 확률표 ==========
+const weaponRates = {
+    "D": {
+        "X+":0.0001,"X":0.0002,"SSS+":0.0005,"SSS":0.0008,"SS+":0.001,
+        "SS":0.002,"S+":0.004,"S":0.006,"A+":0.008,"A":0.010,
+        "B+":0.020,"B":0.040,"C+":0.080,"C":0.120,"D+":0.200,"D":0.500
+    },
+    "C": {
+        "X+":0.0002,"X":0.0005,"SSS+":0.0010,"SSS":0.0020,"SS+":0.0030,
+        "SS":0.0050,"S+":0.010,"S":0.015,"A+":0.020,"A":0.025,
+        "B+":0.040,"B":0.080,"C+":0.120,"C":0.200,"D+":0.300,"D":0.500
+    },
+    "B": {
+        "X+":0.005,"X":0.010,"SSS+":0.013,"SSS":0.016,"SS+":0.020,
+        "SS":0.030,"S+":0.050,"S":0.070,"A+":0.080,"A":0.090,
+        "B+":0.120,"B":0.180,"C+":0.200,"C":0.250,"D+":0.300,"D":0.350
+    },
+    "A": {
+        "X+":0.015,"X":0.023,"SSS+":0.030,"SSS":0.032,"SS+":0.042,
+        "SS":0.060,"S+":0.080,"S":0.100,"A+":0.120,"A":0.150,
+        "B+":0.150,"B":0.200,"C+":0.250,"C":0.300,"D+":0.380,"D":0.480
+    }
+};
+
+const gradeOrder = ["X+","X","SSS+","SSS","SS+","SS","S+","S","A+","A","B+","B","C+","C","D+","D"];
+
+let accum = {};          
+let boxCount = { D:0, C:0, B:0, A:0 };
+
+// ========== Helper ==========
+function highlight(item){
+    if(item==="X+" || item==="X"){
+        return `<span class="yellow-highlight"><b>${item}</b></span>`;
+    }
+    return `<b>${item}</b>`;
+}
+function formatPercent(v){
+    return (v*100).toFixed(3).replace(/0+$/,"").replace(/\.$/,"") + "%";
+}
+
+// ========== 상자 열기 ==========
+function openBox(times){
+    const grade = document.getElementById("gradeSelect").value;
+    const table = weaponRates[grade];
+    const items = Object.keys(table);
+
+    const results=[];
+    for(let i=0;i<times;i++){
+        let r=Math.random(), sum=0;
+        for(let it of items){
+            sum += table[it];
+            if(r <= sum){
+                results.push(it); break;
+            }
+        }
+    }
+
+    updateInstant(results);
+    updateAccum(results, grade);
+}
+
+// ========== 이번 결과 ==========
+function updateInstant(arr){
+    let c={};
+    arr.forEach(v=>{ if(!c[v]) c[v]=0; c[v]++; });
+
+    let h="<b>이번 결과</b><br><br>";
+    if(c["X+"]) h+=`${highlight("X+")} : ${c["X+"]}개<br>`;
+    if(c["X"])  h+=`${highlight("X")} : ${c["X"]}개<br><br>`;
+
+    let line="";
+    gradeOrder.slice(2).forEach(g=>{
+        if(c[g]) line+=`${highlight(g)}:${c[g]}개 `;
+    });
+
+    document.getElementById("boxResult").innerHTML = h + line;
+}
+
+// ========== 누적 ==========
+function updateAccum(arr, grade){
+    arr.forEach(v=>{
+        if(!accum[v]) accum[v]=0;
+        accum[v]++;
+    });
+    boxCount[grade] += arr.length;
+
+    let h = "<b>누적 결과</b><br><br>";
+
+    h += "<b>누적 깐 상자 수</b><br>";
+    h += `D : ${boxCount.D}개&nbsp;&nbsp;`;
+    h += `C : ${boxCount.C}개&nbsp;&nbsp;`;
+    h += `B : ${boxCount.B}개&nbsp;&nbsp;`;
+    h += `A : ${boxCount.A}개<br><br>`;
+
+    if(accum["X+"]) h+=`${highlight("X+")} : ${accum["X+"]}개<br>`;
+    if(accum["X"])  h+=`${highlight("X")} : ${accum["X"]}개<br><br>`;
+
+    let line="";
+    gradeOrder.slice(2).forEach(g=>{
+        if(accum[g]) line+=`${highlight(g)}:${accum[g]}개 `;
+    });
+
+    if(line==="") line="아직 없음";
+
+    document.getElementById("accumBox").innerHTML = h + line;
+}
+
+// ========== 초기화 ==========
+function resetAccum(){
+    accum={};
+    boxCount={D:0,C:0,B:0,A:0};
+    document.getElementById("accumBox").innerHTML="아직 없음";
+}
+
+// ========== 확률표 ==========
+function updateProbBox(){
+    const grade=document.getElementById("gradeSelect").value;
+    const table=weaponRates[grade];
+
+    let h = `<b>[무기 ${grade} 박스 확률]</b><br><br>`;
+    ["X+","X"].forEach(g=>{
+        h += `${highlight(g)} : ${formatPercent(table[g])}<br>`;
+    });
+    h += "<br>";
+
+    gradeOrder.slice(2).forEach(g=>{
+        h += `${highlight(g)} : ${formatPercent(table[g])}<br>`;
+    });
+
+    document.getElementById("probBox").innerHTML = h;
+}
+updateProbBox();
+</script>
+
+</body>
+</html>
