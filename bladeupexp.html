@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>경험치 계산기</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #eef2ff;
+        padding: 30px;
+    }
+    .container {
+        width: 420px;
+        margin: auto;
+        background: #fff;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+    }
+    label {
+        margin-top: 12px;
+        font-weight: bold;
+        display: block;
+    }
+    select, input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 6px;
+        border: 1px solid #bbb;
+        border-radius: 8px;
+    }
+    button {
+        width: 100%;
+        margin-top: 20px;
+        padding: 12px;
+        background: #4A6CFF;
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #3a55d8;
+    }
+    .resultBox {
+        margin-top: 25px;
+        background: #f3f6ff;
+        padding: 15px;
+        border-radius: 12px;
+        font-size: 15px;
+        line-height: 1.65;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>경험치 계산기</h2>
+
+    <label>① 몬스터 경험치 선택(지옥)</label>
+    <select id="monster">
+        <option value="6000">6000</option>
+        <option value="9000">9000</option>
+        <option value="12000">12000</option>
+        <option value="15000">15000</option>
+    </select>
+
+    <label>② 방패 강화 단계</label>
+    <select id="upgrade">
+        <option value="0">--- 선택 ---</option>
+        <option value="5">5강 (10%)</option>
+        <option value="6">6강 (20%)</option>
+        <option value="7">7강 (30%)</option>
+        <option value="8">8강 (40%)</option>
+        <option value="9">9강 (50%)</option>
+        <option value="10">10강 (60%)</option>
+    </select>
+
+    <button onclick="calc()">계산하기</button>
+
+    <div class="resultBox" id="result"></div>
+</div>
+
+<script>
+// 퍼센트 표기를 깔끔하게 만드는 함수
+function formatPercent(value) {
+    let percent = value * 100;
+
+    // 소수점이 사실상 0.000001 같은 경우 → 0으로 처리
+    if (percent < 0.0001) return "0%";
+
+    // 정수면 소수점 제거
+    if (Number.isInteger(percent)) return percent + "%";
+
+    // 아니면 소수점 한 자리까지만
+    return percent.toFixed(1) + "%";
+}
+
+function calc() {
+    let showExp = Number(document.getElementById("monster").value);
+    let up = Number(document.getElementById("upgrade").value);
+
+    if (up === 0) {
+        document.getElementById("result").innerHTML = "강화 단계를 선택해주세요.";
+        return;
+    }
+
+    let baseExp = showExp / 1.5;
+
+    // 장비 보너스: (5강=10% → 7강=30% → 10강=60%)
+    let equipBonus = (up - 4) * 0.10;
+    if (equipBonus < 0) equipBonus = 0;
+
+    let finalRate = 1 + 0.5 + equipBonus;
+    let finalExp = Math.floor(baseExp * finalRate);
+
+    document.getElementById("result").innerHTML = `
+        <b>최종 계산 결과</b><br>
+        선택 몬스터 경험치(표기): <b>${showExp}</b><br>
+        원경험치(Base EXP): <b>${baseExp.toFixed(0)}</b><br>
+        장비 경험치 보너스: <b>${formatPercent(equipBonus)}</b><br>
+        PK존 보너스: <b>50%</b><br><br>
+
+        ▶ <b>획득 경험치: ${finalExp}</b><br><br>
+
+        <b>경험치 공식</b><br>
+        표기 경험치 = 원경험치 × 1.5 (PK 50% 포함)<br>
+        최종 경험치 = 원경험치 × (1 + PK + 장비보너스)<br>
+        = 원경험치 × (1 + 0.5 + 장비%)<br>
+        = 원경험치 × ${finalRate.toFixed(2)}
+    `;
+}
+</script>
+
+</body>
+<div style="text-align:center; margin-top:20px; color:#666; font-size:13px;">
+    by. Pet(소매치기)
+</div>
+</html>
