@@ -1,499 +1,133 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>도전검 키우기 도구 모음</title>
-    <style>
-        body{
-            font-family: Arial, sans-serif;
-            background:#eef2ff;
-            padding:30px;
-            margin:0;
-            color:#111827;
-        }
+<meta charset="UTF-8">
+<title>도전검 도구 모음</title>
 
-        /* 다크모드 토글 */
-        .dark-toggle{
-            max-width:1250px;
-            margin:10px auto 0;
-            display:flex;
-            justify-content:flex-end;
-            align-items:center;
-            font-size:13px;
-            color:#555;
-        }
-        .dark-toggle label{
-            display:flex;
-            align-items:center;
-            gap:6px;
-            cursor:pointer;
-            font-weight:normal;
-            margin:0;
-        }
-        .dark-toggle input[type="checkbox"]{
-            width:18px;
-            height:18px;
-            cursor:pointer;
-        }
+<style>
+    body{
+        font-family: Arial, sans-serif;
+        background:#eef2ff;
+        padding:30px;
+        transition: background 0.3s, color 0.3s;
+    }
+    body.dark-mode{
+        background:#111827;
+        color:#e5e7eb;
+    }
 
-        /* 상단 우측 제작자 표시 */
-        .author-tag{
-            position:fixed;
-            top:10px;
-            right:18px;
-            font-size:12px;
-            color:#888;
-            z-index:100;
-            pointer-events:none;
-        }
+    .container{
+        width:1250px;
+        margin:auto;
+    }
 
-        /* 공통 카드 스타일 */
-        .card{
-            background:#fff;
-            padding:25px;
-            border-radius:14px;
-            box-shadow:0 4px 10px rgba(0,0,0,0.15);
-            margin-bottom:30px;
-        }
+    .card{
+        background:#fff;
+        border-radius:14px;
+        padding:20px;
+        margin-bottom:25px;
+        box-shadow:0 4px 10px rgba(0,0,0,0.15);
+        transition: background 0.3s;
+    }
+    body.dark-mode .card{
+        background:#1f2937;
+    }
 
-        /* ===== 상단 영역(리뷰 + 경험치 계산기) ===== */
-        .top-area{
-            position:relative;
-            max-width:1100px;
-            margin:20px auto 30px;
-            min-height:320px;
-        }
-        .exp-card{
-            width:420px;
-            margin:0 auto;
-            box-sizing:border-box;
-        }
-        h2{
-            text-align:center;
-            margin-bottom:20px;
-            color:#333;
-        }
-        label{
-            margin-top:12px;
-            font-weight:bold;
-            display:block;
-            margin-bottom:5px;
-        }
-        select,input{
-            width:100%;
-            padding:10px;
-            margin-top:6px;
-            border:1px solid #bbb;
-            border-radius:8px;
-            box-sizing:border-box;
-        }
-        button{
-            width:100%;
-            margin-top:20px;
-            padding:12px;
-            background:#4A6CFF;
-            border:none;
-            color:#fff;
-            font-size:16px;
-            border-radius:8px;
-            cursor:pointer;
-        }
-        button:hover{
-            background:#3a55d8;
-        }
-        .r{
-            margin-top:15px;
-            background:#f3f6ff;
-            padding:12px;
-            border-radius:12px;
-            font-size:14px;
-            line-height:1.65;
-            max-height:220px;
-            overflow-y:auto;
-            white-space:normal;
-            word-wrap:break-word;
-        }
+    h2{ text-align:center; margin-bottom:15px; }
 
-        /* 게임 이미지 + 리뷰 버튼 */
-        .game-promo{
-            position:absolute;
-            left:0;
-            top:50%;
-            transform:translateY(-50%);
-            width:260px;
-            background:#ffffffaa;
-            padding:20px;
-            border-radius:14px;
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            box-shadow:0 4px 12px rgba(0,0,0,0.12);
-            box-sizing:border-box;
-        }
-        .game-img{
-            width:200px;
-            border-radius:12px;
-            margin-bottom:15px;
-        }
-        .review-btn{
-            display:inline-block;
-            background:#4A6CFF;
-            color:#fff;
-            font-weight:bold;
-            padding:10px 14px;
-            border-radius:8px;
-            text-decoration:none;
-            font-size:14px;
-            text-align:center;
-            width:100%;
-            box-sizing:border-box;
-            transition:0.2s;
-        }
-        .review-btn:hover{
-            background:#3a55d8;
-        }
+    input, select{
+        width:100%;
+        padding:9px;
+        border-radius:8px;
+        border:1px solid #bbb;
+        margin-top:5px;
+        box-sizing:border-box;
+    }
+    body.dark-mode input, body.dark-mode select{
+        background:#374151;
+        color:white;
+        border:1px solid #555;
+    }
 
-        /* ===== 상자 시뮬레이터 ===== */
-        .sim-card{
-            max-width:1250px;
-            margin:0 auto 40px;
-            box-sizing:border-box;
-        }
-        .layout-3col{
-            display:flex;
-            justify-content:space-between;
-            align-items:flex-start;
-            gap:20px;
-        }
-        .left-col,
-        .mid-col,
-        .right-col{
-            width:32%;
-            box-sizing:border-box;
-        }
-        .accumBox{
-            background:#fff7e6;
-            border-radius:12px;
-            padding:12px;
-            border:1px solid #ffdf9e;
-            font-size:14px;
-            line-height:1.6;
-            max-height:450px;
-            overflow-y:auto;
-            white-space:normal;
-            margin-bottom:12px;
-        }
-        .probBox{
-            background:#f9fafc;
-            border-radius:12px;
-            padding:12px;
-            font-size:13px;
-            line-height:1.6;
-            border:1px solid #dde3f5;
-            max-height:450px;
-            overflow-y:auto;
-        }
-        .btn-row{
-            display:flex;
-            gap:8px;
-            margin-top:12px;
-        }
-        .btn-row button{
-            flex:1;
-            margin-top:0;
-        }
-        .yellow-highlight{
-            background:#ffeb3b;
-            padding:0 4px;
-            border-radius:4px;
-        }
+    button{
+        width:100%;
+        padding:12px;
+        margin-top:12px;
+        background:#4A6CFF;
+        color:white;
+        border:none;
+        border-radius:8px;
+        font-size:16px;
+        cursor:pointer;
+    }
+    button:hover{ background:#3a55d8; }
 
-        /* ===== 장비 강화 시뮬레이션 ===== */
-        .enh-card{
-            max-width:1250px;
-            margin:0 auto 40px;
-            box-sizing:border-box;
-        }
-        .enh-layout{
-            display:flex;
-            gap:20px;
-            align-items:flex-start;
-            justify-content:space-between;
-        }
-        .enh-left,
-        .enh-main,
-        .enh-right{
-            width:32%;
-            box-sizing:border-box;
-        }
-        .enh-main{
-            min-width:320px;
-        }
-        .enh-stats-box{
-            background:#f9fafc;
-            border-radius:12px;
-            border:1px solid #dde3f5;
-            padding:12px;
-            font-size:13px;
-            line-height:1.6;
-        }
-        .enh-prob{
-            background:#f9fafc;
-            border-radius:12px;
-            border:1px solid #dde3f5;
-            padding:12px;
-            font-size:13px;
-            line-height:1.6;
-        }
-        .enh-row{
-            display:flex;
-            gap:8px;
-            align-items:center;
-            margin-top:6px;
-            flex-wrap:wrap;
-        }
-        .enh-row label.inline{
-            font-weight:normal;
-            margin-top:0;
-        }
-        .enh-badge{
-            display:inline-block;
-            padding:2px 6px;
-            border-radius:6px;
-            background:#e3e8ff;
-            font-size:12px;
-            margin-left:4px;
-        }
-        .enh-summary{
-            background:#fff;
-            border-radius:10px;
-            padding:8px 10px;
-            margin-bottom:10px;
-            border:1px solid #dde3f5;
-            font-size:12px;
-        }
-        .enh-level-title{
-            font-weight:bold;
-            margin-top:8px;
-        }
-        .enh-meta{
-            font-size:12px;
-            color:#555;
-        }
+    .r{
+        margin-top:15px;
+        background:#f3f6ff;
+        padding:15px;
+        border-radius:12px;
+        /* 결과 영역 전체를 한 번에 보기 위해 스크롤 제거 */
+        max-height:none;
+        overflow-y:visible;
+        line-height:1.6;
+    }
+    body.dark-mode .r{
+        background:#1e293b;
+        color:#e5e7eb;
+    }
 
-        .stat-reset-btn{
-            margin-top:8px;
-            width:100%;
-            padding:8px 10px;
-            border-radius:8px;
-            border:none;
-            background:#4A6CFF;
-            font-size:13px;
-            cursor:pointer;
-            color:#fff;
-            font-weight:bold;
-        }
-        .stat-reset-btn:hover{
-            background:#3a55d8;
-        }
+    /* 스탯 계산기 그리드 */
+    .stat-grid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:12px;
+    }
 
-        /* 강화 로그 색상 */
-        .log-entry{
-            font-size:13px;
-            margin-bottom:4px;
-        }
-        .log-success{ color:#1b8a3a; }
-        .log-keep{ color:#555; }
-        .log-down{ color:#d88a00; }
-        .log-break{ color:#d33; }
-        .log-info{ color:#2b6cb0; }
+    /* 노란 하이라이트 (다크모드 대비 수정본) */
+    .yellow-highlight{
+        background:#ffeb3b;
+        color:#111827; /* 어두운 글자색으로 변경 → 다크모드에서도 잘 보임 */
+        padding:0 4px;
+        border-radius:4px;
+    }
 
-        .auto-controls{
-            display:flex;
-            gap:8px;
-            margin-top:8px;
-            flex-wrap:wrap;
-        }
-        .auto-controls button{
-            flex:1;
-            padding:8px 10px;
-            margin-top:0;
-            font-size:13px;
-        }
-        .speed-row{
-            display:flex;
-            align-items:center;
-            gap:8px;
-            margin-top:8px;
-        }
-        .speed-row span{
-            font-size:13px;
-        }
-
-        .small-btn{
-            width:auto;
-            margin-top:0;
-            padding:6px 10px;
-            font-size:12px;
-        }
-
-        .start-row{
-            display:flex;
-            align-items:center;
-            gap:8px;
-            margin-top:6px;
-            flex-wrap:wrap;
-        }
-        .start-row span{
-            font-size:13px;
-        }
-        #enhStartLevel{
-            width:auto;
-            padding:6px 8px;
-        }
-
-        /* 강화 로그: 크기 고정 + JS로 오래된 로그 삭제 */
-        #enhLog{
-            overflow-y:hidden;
-        }
-
-        /* 반응형 */
-        @media (max-width: 900px){
-            .top-area{
-                min-height:0;
-            }
-            .game-promo{
-                position:static;
-                transform:none;
-                margin:0 auto 20px;
-            }
-            .layout-3col{
-                flex-wrap:wrap;
-            }
-            .left-col,
-            .mid-col,
-            .right-col{
-                width:100%;
-            }
-            .enh-layout{
-                flex-wrap:wrap;
-            }
-            .enh-left,
-            .enh-main,
-            .enh-right{
-                width:100%;
-            }
-        }
-
-        /* ===== 다크 모드 ===== */
-        body.dark-mode{
-            background:#020617;
-            color:#e5e7eb;
-        }
-        body.dark-mode .card{
-            background:#0f172a;
-            box-shadow:0 4px 14px rgba(0,0,0,0.5);
-        }
-        body.dark-mode h2{
-            color:#e5e7eb;
-        }
-        body.dark-mode select,
-        body.dark-mode input{
-            background:#020617;
-            color:#e5e7eb;
-            border-color:#4b5563;
-        }
-        body.dark-mode .r,
-        body.dark-mode .accumBox,
-        body.dark-mode .probBox,
-        body.dark-mode .enh-stats-box,
-        body.dark-mode .enh-prob{
-            background:#020617;
-            border-color:#374151;
-            color:#e5e7eb;
-        }
-        body.dark-mode .game-promo{
-            background:#020617dd;
-        }
-        body.dark-mode .author-tag{
-            color:#9ca3af;
-        }
-        body.dark-mode .review-btn,
-        body.dark-mode button,
-        body.dark-mode .stat-reset-btn{
-            background:#6366f1;
-        }
-        body.dark-mode .review-btn:hover,
-        body.dark-mode button:hover,
-        body.dark-mode .stat-reset-btn:hover{
-            background:#4f46e5;
-        }
-		body.dark-mode .yellow-highlight{
-    background:#facc15;  /* 노란색 유지 */
-    color:#111827;       /* 진한 글자색 */
-}
-
-/* 통계 상단 박스(누적 사용 주문서 / 통계 초기화 버튼 있는 부분) */
-body.dark-mode .enh-summary{
-    background:#020617;   /* 어두운 배경 */
-    border-color:#4b5563;
-    color:#e5e7eb;        /* 글씨 밝게 */
-}
-
-/* "안전강화 구간" 배지 */
-body.dark-mode .enh-badge{
-    background:#1d4ed8;
-    color:#e5e7eb;
-}
-
-/* 통계 설명 텍스트 색 조금 더 밝게 */
-body.dark-mode .enh-meta{
-    color:#d1d5db;
-}
-
-    </style>
+    /* 다크모드 스위치 */
+    .dm-switch{
+        position:fixed;
+        top:20px;
+        right:20px;
+        padding:10px 14px;
+        background:#4A6CFF;
+        color:white;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+        z-index:999;
+    }
+</style>
 </head>
 <body>
 
-<div class="author-tag">by . Pet(소매치기)</div>
+<button class="dm-switch" onclick="toggleDarkMode()"> 다크모드 전환</button>
 
-<!-- 다크모드 스위치 -->
-<div class="dark-toggle">
-    <label>
-        <input type="checkbox" id="darkModeToggle">
-        다크 모드
-    </label>
-</div>
+<div class="container">
 
-<!-- ===== 상단: 리뷰 + 경험치 계산기 ===== -->
-<div class="top-area">
-
-    <!-- 리뷰 박스 (왼쪽) -->
-    <div class="game-promo">
-        <img src="https://play-lh.googleusercontent.com/AHNGFcD7v94xf87iiEpqeFt2L4zmGz3F9LqvGv11BtugY9DenVIdGSoQ4HKV9yZFxlR16gWlo70Xyy4mu0e4FA=w240-h480-rw"
-             class="game-img" alt="도전검 키우기">
-        <a href="https://play.google.com/store/apps/details?id=com.embris.bladeup"
-           target="_blank"
-           class="review-btn">
-            ⭐ 별 5개 리뷰하러 가기
-        </a>
-    </div>
-
-    <!-- 경험치 계산기 (중앙) -->
-    <div class="card exp-card">
+    <!-- 경험치 계산기 -->
+    <div class="card">
         <h2>경험치 계산기</h2>
 
-        <label>1. 몬스터 경험치 선택</label>
-        <select id="a">
-            <option value="6000" selected>6000</option>
+        <label>① 몬스터 경험치 선택</label>
+        <select id="exp_mon">
+            <option value="6000">6000</option>
             <option value="9000">9000</option>
             <option value="12000">12000</option>
             <option value="15000">15000</option>
         </select>
 
-        <label>2. 방패 강화 단계 (5강부터 경험치 증가)</label>
-        <select id="b">
-            <option value="0" selected>--- 선택 ---</option>
+        <label>② 방패 강화 단계 (5강부터 경험치 증가)</label>
+        <select id="exp_shield">
+            <option value="0">--- 선택 ---</option>
             <option value="5">5강 (10%)</option>
             <option value="6">6강 (20%)</option>
             <option value="7">7강 (30%)</option>
@@ -502,208 +136,287 @@ body.dark-mode .enh-meta{
             <option value="10">10강 (60%)</option>
         </select>
 
-        <button onclick="z()">계산하기</button>
+        <button onclick="expCalc()">계산하기</button>
 
-        <div class="r" id="x"></div>
+        <div class="r" id="exp_result"></div>
     </div>
-</div>
 
-<!-- ===== 상자 시뮬레이터 ===== -->
-<div class="card sim-card">
-    <h2>상자 시뮬레이터 (무기 / 방어구 / 장신구)</h2>
 
-    <div class="layout-3col">
 
-        <!-- LEFT : 누적 결과 -->
-        <div class="left-col">
-            <label>누적 결과</label>
-            <div class="accumBox" id="accumBox">아직 없음</div>
-            <button onclick="resetAccum()">누적 초기화</button>
-        </div>
+    <!-- ─────────────────────────────── -->
+    <!-- 상자 시뮬레이터 -->
+    <!-- ─────────────────────────────── -->
+    <div class="card">
+        <h2>상자 시뮬레이터 (무기 / 방어구 / 장신구)</h2>
 
-        <!-- MID : 시뮬 UI -->
-        <div class="mid-col">
-            <label>부위 선택</label>
-            <select id="partSelect" onchange="onPartChange()">
-                <option value="weapon">무기</option>
-                <option value="armor">방어구</option>
-                <option value="accessory">장신구</option>
-            </select>
+        <div style="display:flex; gap:20px;">
 
-            <label>상자 등급 선택</label>
-            <select id="gradeSelect" onchange="updateProbBox()">
-                <option value="D">D 등급 박스</option>
-                <option value="C">C 등급 박스</option>
-                <option value="B">B 등급 박스</option>
-                <option value="A">A 등급 박스</option>
-            </select>
+            <!-- LEFT: 누적 결과 -->
+            <div style="flex:1;">
+                <label>누적 결과</label>
+                <div class="r" id="box_accum">아직 없음</div>
+                <button onclick="resetBoxAccum()">누적 초기화</button>
+            </div>
 
-            <div class="btn-row">
+            <!-- MID: UI -->
+            <div style="flex:1;">
+                <label>부위 선택</label>
+                <select id="box_part" onchange="updateBoxProb()">
+                    <option value="weapon">무기</option>
+                    <option value="armor">방어구</option>
+                    <option value="accessory">장신구</option>
+                </select>
+
+                <label>등급 선택</label>
+                <select id="box_grade" onchange="updateBoxProb()">
+                    <option value="D">D 등급 박스</option>
+                    <option value="C">C 등급 박스</option>
+                    <option value="B">B 등급 박스</option>
+                    <option value="A">A 등급 박스</option>
+                </select>
+
                 <button onclick="openBox(1)">1회</button>
                 <button onclick="openBox(10)">10회</button>
                 <button onclick="openBox(100)">100회</button>
+
+                <div class="r" id="box_result"></div>
             </div>
 
-            <div class="r" id="boxResult"></div>
+            <!-- RIGHT: 확률표 -->
+            <div style="flex:1;">
+                <div class="r" id="box_prob"></div>
+            </div>
         </div>
-
-        <!-- RIGHT : 확률표 -->
-        <div class="right-col">
-            <div class="probBox" id="probBox"></div>
-        </div>
-
     </div>
-</div>
 
-<!-- ===== 장비 강화 시뮬레이션 ===== -->
-<div class="card enh-card">
-    <h2>장비 강화 시뮬레이션</h2>
 
-    <div class="enh-layout">
 
-        <!-- LEFT : 통계 -->
-        <div class="enh-left">
-            <div class="enh-stats-box">
-                <div class="enh-summary">
-                    누적 사용 주문서 : <b id="statScrolls">0</b> 개<br>
-                    누적 사용 장비   : <b id="statItems">0</b> 개
-                    <button type="button" class="stat-reset-btn" onclick="resetEnhStats()">통계 초기화</button>
-                </div>
-                <div id="enhLevelStats">
-                    연속강화 시 단계별 통계가 여기에 표시됩니다.
-                </div>
+    <!-- ─────────────────────────────── -->
+    <!-- 장비 강화 시뮬레이터 -->
+    <!-- ─────────────────────────────── -->
+    <div class="card">
+        <h2>장비 강화 시뮬레이터</h2>
+
+        <div style="display:flex; gap:20px;">
+
+            <!-- LEFT: 통계 -->
+            <div style="flex:1;">
+                <label>통계</label>
+                <div class="r" id="upg_stats"></div>
+                <button onclick="resetUpgrade()">초기화</button>
+            </div>
+
+            <!-- MID: 강화 UI -->
+            <div style="flex:1;">
+                <label>장비 종류</label>
+                <select id="upg_type">
+                    <option value="weapon">무기 (최대 15강)</option>
+                    <option value="armor">방어구 (최대 10강)</option>
+                    <option value="accessory">장신구 (최대 8강)</option>
+                </select>
+
+                <label>현재 강화 단계</label>
+                <select id="upg_now"></select>
+
+                <label>목표 강화 단계</label>
+                <select id="upg_target"></select>
+
+                <label>연속 강화</label>
+                <select id="upg_speed">
+                    <option value="1">보통 속도</option>
+                    <option value="2">빠름 (2배)</option>
+                    <option value="4">매우 빠름 (4배)</option>
+                    <option value="8">광속 (8배)</option>
+                </select>
+
+                <button onclick="startUpgrade()">강화 시작</button>
+                <button onclick="stopUpgrade()">강화 중지</button>
+
+                <div class="r" id="upg_log"></div>
+            </div>
+
+            <!-- RIGHT: 확률표 -->
+            <div style="flex:1;">
+                <label>강화 확률</label>
+                <div class="r" id="upg_prob"></div>
             </div>
         </div>
-
-        <!-- CENTER : 강화 UI -->
-        <div class="enh-main">
-            <label>장비 종류 선택</label>
-            <select id="enhTypeSelect">
-                <option value="weapon">무기</option>
-                <option value="armor">방어구</option>
-                <option value="accessory">장신구</option>
-            </select>
-
-            <label>현재 강화 단계</label>
-            <div class="enh-row">
-                <span id="enhCurrentLevel">+0</span>
-                <span class="enh-badge" id="enhSafeBadge">안전강화 구간</span>
-            </div>
-
-            <!-- 시작 강화 단계 선택 -->
-            <div class="start-row">
-                <span>시작 강화 단계:</span>
-                <select id="enhStartLevel"></select>
-                <button type="button" class="small-btn" onclick="applyStartLevel()">적용</button>
-            </div>
-
-            <label>성공 / 실패 정보</label>
-            <div class="enh-row">
-                <span class="enh-meta">
-                    성공 확률: <b id="enhSuccessRate">100%</b><br>
-                    실패 시: 유지 / 하락 / 파괴 (각 33%)
-                </span>
-            </div>
-
-            <button onclick="doSingleEnhance()">강화하기</button>
-
-            <div style="margin-top:15px; border-top:1px solid #e0e4ff; padding-top:10px;">
-                <label class="inline">
-                    <input type="checkbox" id="enhAutoCheck" onchange="onAutoToggle()">
-                    연속강화 사용
-                </label>
-
-                <div id="autoOptions" style="margin-top:10px; display:none;">
-                    <label>목표 강화 단계 선택</label>
-                    <select id="enhTargetLevel"></select>
-
-                    <div class="speed-row">
-                        <span>속도:</span>
-                        <select id="enhSpeed">
-                            <option value="2">중간</option>
-                            <option value="4">빠름</option>
-                            <option value="8">매우 빠름</option>
-                        </select>
-                    </div>
-
-                    <div class="auto-controls">
-                        <button type="button" onclick="doAutoEnhance()">연속강화 시작</button>
-                        <button type="button" onclick="stopAutoEnhance()">강화 중지</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="r" id="enhLog" style="margin-top:15px;">
-                <div class="log-entry log-info">강화 로그가 여기 표시됩니다.</div>
-            </div>
-        </div>
-
-        <!-- RIGHT : 강화 확률표 -->
-        <div class="enh-right">
-            <div class="enh-prob" id="enhProbBox">
-                강화 확률표가 여기에 표시됩니다.
-            </div>
-        </div>
-
     </div>
-</div>
 
+
+
+    <!-- ─────────────────────────────── -->
+    <!-- 스탯 효율 계산기 (STR vs DEX) – 자동 최적화 -->
+    <!-- ─────────────────────────────── -->
+    <div class="card stat-card">
+        <h2>스탯 효율 계산기(임시기능)</h2>
+
+        <div class="stat-grid">
+            <div>
+                <label>현재 STR (내가 찍은 스탯)</label>
+                <input type="number" id="statStr" placeholder="예: 80">
+            </div>
+
+            <div>
+                <label>현재 DEX (내가 찍은 스탯)</label>
+                <input type="number" id="statDex" placeholder="예: 234">
+            </div>
+
+            <div>
+                <label>현재 공격력 (장비 포함)</label>
+                <input type="number" id="statAtk" placeholder="예: 309">
+            </div>
+
+            <div>
+                <label>현재 치명타 확률 (%)</label>
+                <input type="number" id="statCrit" step="0.01" placeholder="예: 222.87">
+            </div>
+
+            <div>
+                <label>현재 회피 수치 (운영자 공지의 X값)</label>
+                <input type="number" id="statEvade" step="0.01" placeholder="예: 111.75">
+            </div>
+        </div>
+
+        <button onclick="runStatCalc()">스탯 최적화 계산하기</button>
+
+        <div class="r" id="statResult">
+            현재 STR/DEX, 공격력, 치명타, 회피 수치를 입력하면<br>
+            ▷ DEX 1포인트의 <b>표기 회피 vs 실제 회피%</b> 변화<br>
+            ▷ STR 1 vs DEX 1 <b>딜 효율 비교</b><br>
+            ▷ <b>딜×생존(회피)</b>을 함께 봤을 때 최적 STR/DEX 배분<br>
+            을 계산해줍니다.
+        </div>
+    </div>
+
+</div>
 <script>
-/* ========== 다크 모드 토글 ========== */
-(function initDarkMode(){
-    const toggle = document.getElementById('darkModeToggle');
-    const saved = localStorage.getItem('bladeup_dark_mode');
-    if(saved === '1'){
-        document.body.classList.add('dark-mode');
-        toggle.checked = true;
+
+function runCustomStatTest(){
+    const base = window._statBaseData;
+    if(!base){
+        alert("먼저 위의 스탯 최적화 계산을 한 번 실행해주세요.");
+        return;
     }
-    toggle.addEventListener('change', (e)=>{
-        if(e.target.checked){
-            document.body.classList.add('dark-mode');
-            localStorage.setItem('bladeup_dark_mode','1');
-        }else{
-            document.body.classList.remove('dark-mode');
-            localStorage.setItem('bladeup_dark_mode','0');
-        }
-    });
-})();
+    const out = document.getElementById("statHypoResult");
+    const strInput = document.getElementById("statHypoStr");
+    const dexInput = document.getElementById("statHypoDex");
 
-/* ========== 경험치 계산기 ========== */
-function y(q){
-    let w = q * 100;
-    if (w < 0.0001) return "0%";
-    return Number.isInteger(w) ? w + "%" : w.toFixed(1) + "%";
-}
-function z(){
-    let m = Number(document.getElementById("a").value); // 표기 경험치
-    let n = Number(document.getElementById("b").value); // 방패 강화 단계
-
-    if (n === 0) {
-        document.getElementById("x").innerHTML = "강화 단계를 선택해주세요.";
+    if(!out || !strInput || !dexInput){
         return;
     }
 
-    let o = m / 1.5; // 원경험치(Base EXP)
-    let p = (n - 4) * 0.1;
-    if (p < 0) p = 0;
-    let r = 1 + 0.5 + p; // 1 + PK(0.5) + 장비보너스
-    let s = Math.floor(o * r);
+    const STR_new = parseFloat(strInput.value);
+    const DEX_new = parseFloat(dexInput.value);
 
-    document.getElementById("x").innerHTML =
-        "<b>최종 계산 결과</b><br>" +
-        "선택 몬스터 경험치(표기): <b>" + m + "</b><br>" +
-        "원경험치(Base EXP): <b>" + o.toFixed(0) + "</b><br>" +
-        "장비 경험치 보너스: <b>" + y(p) + "</b><br>" +
-        "PK존 보너스: <b>50%</b><br><br>" +
-        ">> <b>획득 경험치: " + s + "</b><br><br>" +
-        "<b>경험치 공식</b><br>" +
-        "표기 경험치 = 원경험치 × 1.5 (PK 50% 포함)<br>" +
-        "최종 경험치 = 원경험치 × (1 + PK + 장비보너스)<br>" +
-        "= 원경험치 × (1 + 0.5 + 장비%)<br>" +
-        "= 원경험치 × " + r.toFixed(2);
+    if(isNaN(STR_new) || isNaN(DEX_new)){
+        out.innerHTML = "STR과 DEX를 숫자로 정확히 입력해주세요.";
+        return;
+    }
+    if(STR_new < 0 || DEX_new < 0){
+        out.innerHTML = "STR과 DEX는 0 이상이어야 합니다.";
+        return;
+    }
+
+    const atk_new   = base.baseAtk   + STR_new * 0.35;
+    const crit_new  = base.baseCrit  + DEX_new * 0.18;
+    const evStatNew = base.baseEvade + DEX_new * 0.18;
+
+    const mult      = avgMultiplierFromCrit(crit_new);
+    const dps       = atk_new * mult;
+
+    // 실제 회피율 (표기 그대로) 및 효율용 회피율(50% 캡)
+    const evadeAppliedRaw = (evStatNew <= 0) ? 0 : (evStatNew / (evStatNew + 100)) * 100;
+    const evadeForSurvival = Math.min(evadeAppliedRaw, 50);
+
+    let hitChance = 1 - (evadeForSurvival / 100);
+    if(hitChance < 0.01) hitChance = 0.01;
+
+    const survivalScore = 1 / hitChance;
+    const effScore      = dps * survivalScore;
+
+    const diffEffPercent = ((effScore / base.currentEff) - 1) * 100;
+    const diffEffRounded = Math.round(diffEffPercent * 10) / 10;
+
+    const evadeStr = evadeAppliedRaw.toFixed(2);
+    const atkStr   = atk_new.toFixed(2);
+    const dpsStr   = dps.toFixed(2);
+
+    let msg = "";
+    msg += `어디까지나 정답은 없고, 체감상 실 회피율 50%를 기준으로 합니다.<br>`;
+    msg += `예상 배분 : DEX <b>${DEX_new}</b>, STR <b>${STR_new}</b><br>`;
+    msg += `예상 평균 딜: 약 <b>${dpsStr}</b><br>`;
+    msg += `추천 분배 시 최종 공격력: 약 <b>${atkStr}</b><br>`;
+    msg += `추천 분배 시 최종 회피 수치(X): <b>${evStatNew.toFixed(2)}</b><br>`;
+    msg += `추천 분배 시 실제 회피: 약 <b>${evadeStr}%</b><br>`;
+    msg += `현재 대비 총 효율(DPS×생존) 변화: <b>${diffEffRounded}%</b>` +
+           (diffEffRounded > 0 ? " 증가" : (diffEffRounded < 0 ? " 감소" : " 변화 없음")) + "<br>";
+
+    out.innerHTML = msg;
 }
 
-/* ========== 상자 시뮬레이터 ========== */
+/* ─────────────────────────────
+   공통: 다크 모드
+   ───────────────────────────── */
+const DARK_KEY = "bladeup_dark_mode";
+
+function applyDarkModeFromStorage(){
+    const v = localStorage.getItem(DARK_KEY);
+    if(v === "1"){
+        document.body.classList.add("dark-mode");
+    }else{
+        document.body.classList.remove("dark-mode");
+    }
+}
+
+function toggleDarkMode(){
+    const isDark = document.body.classList.toggle("dark-mode");
+    localStorage.setItem(DARK_KEY, isDark ? "1" : "0");
+}
+
+/* ─────────────────────────────
+   경험치 계산기
+   ───────────────────────────── */
+function expCalc(){
+    const m = Number(document.getElementById("exp_mon").value);      // 표기 몬스터 EXP
+    const n = Number(document.getElementById("exp_shield").value);   // 방패 강화 단계
+    const out = document.getElementById("exp_result");
+
+    if(n === 0){
+        out.innerHTML = "방패 강화 단계를 선택해주세요.";
+        return;
+    }
+
+    const baseExp = m / 1.5;          // PK 50% 포함된 표기 → 원경험치
+    let equipBonus = (n - 4) * 0.1;   // 5강부터 10%씩
+    if(equipBonus < 0) equipBonus = 0;
+
+    const totalMult = 1 + 0.5 + equipBonus; // 1(기본) + 0.5(PK) + 장비
+    const finalExp = Math.floor(baseExp * totalMult);
+
+    function fmtPercent(v){
+        const p = v*100;
+        if(p < 0.0001) return "0%";
+        return Number.isInteger(p) ? p + "%" : p.toFixed(1) + "%";
+    }
+
+    out.innerHTML =
+        "<b>📌 최종 계산 결과</b><br>" +
+        "선택 몬스터 경험치(표기): <b>" + m + "</b><br>" +
+        "원경험치(Base EXP): <b>" + baseExp.toFixed(0) + "</b><br>" +
+        "장비 경험치 보너스: <b>" + fmtPercent(equipBonus) + "</b><br>" +
+        "PK존 보너스: <b>50%</b><br><br>" +
+        "▶ <b>획득 경험치: " + finalExp + "</b><br><br>" +
+        "<b>📘 경험치 공식</b><br>" +
+        "표기 경험치 = 원경험치 × 1.5 (PK 50% 포함)<br>" +
+        "최종 경험치 = 원경험치 × (1 + PK + 장비보너스)";
+}
+
+/* ─────────────────────────────
+   상자 시뮬레이터
+   ───────────────────────────── */
+
+// 무기 확률
 const weaponRates = {
     "D": {
         "X+":0.000100,"X":0.000200,"SSS+":0.000500,"SSS":0.000800,"SS+":0.001000,"SS":0.002000,
@@ -726,6 +439,8 @@ const weaponRates = {
         "D":0.053200,"E":0.072100,"F":0.062000
     }
 };
+
+// 방어구
 const armorRates = {
     "D": {
         "X":0.0001,"SSS":0.0005,"SS":0.0010,"S":0.0030,"A":0.0130,
@@ -744,6 +459,8 @@ const armorRates = {
         "B":0.1802,"C":0.1213,"D":0.1079,"E":0.1120,"F":0.1071
     }
 };
+
+// 장신구
 const accessoryRates = {
     "D": {
         "X":0.0001,"S":0.0010,"A":0.0030,"B":0.0240,"C":0.1003,
@@ -763,514 +480,610 @@ const accessoryRates = {
     }
 };
 
-const ratesByPart = {
+const boxRatesByPart = {
     weapon: weaponRates,
     armor: armorRates,
     accessory: accessoryRates
 };
-const gradeOrders = {
+const boxOrder = {
     weapon: ["X+","X","SSS+","SSS","SS+","SS","S+","S","A+","A","B","C","D","E","F"],
     armor:  ["X","SSS","SS","S","A","B","C","D","E","F"],
     accessory: ["X","S","A","B","C","D","E","F"]
 };
-const partLabel = {
-    weapon: "무기",
-    armor: "방어구",
-    accessory: "장신구"
+const boxLabel = {
+    weapon:"무기",
+    armor:"방어구",
+    accessory:"장신구"
 };
-let accum = {};
-let boxCount = { D:0, C:0, B:0, A:0 };
 
-function highlight(item){
-    if(item==="X+" || item==="X"){
-        return `<span class="yellow-highlight"><b>${item}</b></span>`;
+let boxAccumCount = {};
+let boxBoxCount   = {D:0, C:0, B:0, A:0};
+
+function boxHighlight(name){
+    if(name==="X+" || name==="X"){
+        return `<span class="yellow-highlight"><b>${name}</b></span>`;
     }
-    return `<b>${item}</b>`;
+    return `<b>${name}</b>`;
 }
-function formatPercent(v){
-    return (v*100).toFixed(3).replace(/0+$/,"").replace(/\.$/,"") + "%";
+function boxPercent(p){
+    return (p*100).toFixed(3).replace(/0+$/,'').replace(/\.$/,'') + "%";
 }
-function getCurrentPart(){
-    return document.getElementById("partSelect").value;
+
+function getBoxPart(){ return document.getElementById("box_part").value; }
+function getBoxGrade(){ return document.getElementById("box_grade").value; }
+
+function resetBoxAccum(){
+    boxAccumCount = {};
+    boxBoxCount   = {D:0, C:0, B:0, A:0};
+    document.getElementById("box_accum").innerHTML = "아직 없음";
 }
-function getCurrentGrade(){
-    return document.getElementById("gradeSelect").value;
+
+function updateBoxProb(){
+    const part  = getBoxPart();
+    const grade = getBoxGrade();
+    const table = boxRatesByPart[part][grade];
+    const order = boxOrder[part];
+
+    let html = `<b>[${boxLabel[part]} ${grade} 등급 박스 확률]</b><br><br>`;
+
+    // X+, X 먼저
+    const specials = [];
+    if(order.includes("X+")) specials.push("X+");
+    if(order.includes("X"))  specials.push("X");
+
+    specials.forEach(g=>{
+        if(table[g] !== undefined){
+            html += `${boxHighlight(g)} : ${boxPercent(table[g])}<br>`;
+        }
+    });
+    if(specials.some(g=>table[g]!==undefined)) html += "<br>";
+
+    order.filter(g=>!specials.includes(g)).forEach(g=>{
+        if(table[g] !== undefined){
+            html += `${boxHighlight(g)} : ${boxPercent(table[g])}<br>`;
+        }
+    });
+
+    document.getElementById("box_prob").innerHTML = html;
 }
-function onPartChange(){
-    resetAccum();
-    updateProbBox();
-    document.getElementById("boxResult").innerHTML = "";
-}
+
 function openBox(times){
-    const part  = getCurrentPart();
-    const grade = getCurrentGrade();
-    const table = ratesByPart[part][grade];
-
+    const part  = getBoxPart();
+    const grade = getBoxGrade();
+    const table = boxRatesByPart[part][grade];
     const entries = Object.entries(table);
-    const totalProb = entries.reduce((sum, [,v]) => sum + v, 0);
-    const results = [];
+    const totalP  = entries.reduce((s,[,v])=>s+v,0);
 
+    const resultArr = [];
     for(let i=0;i<times;i++){
-        let r = Math.random() * totalProb;
+        let r = Math.random()*totalP;
         let sum = 0;
-        for(let [it, p] of entries){
+        for(const [name,p] of entries){
             sum += p;
             if(r <= sum){
-                results.push(it);
+                resultArr.push(name);
                 break;
             }
         }
     }
-    updateInstant(results, part);
-    updateAccum(results, grade, part, times);
-}
-function updateInstant(arr, part){
-    const order = gradeOrders[part];
-    let count = {};
-    arr.forEach(v=>{
-        if(!count[v]) count[v]=0;
-        count[v]++;
+
+    // 이번 결과
+    const order = boxOrder[part];
+    const count = {};
+    resultArr.forEach(x=>{
+        if(!count[x]) count[x]=0;
+        count[x]++;
     });
 
     let html = "<b>이번 결과</b><br><br>";
     const specials = [];
     if(order.includes("X+")) specials.push("X+");
     if(order.includes("X"))  specials.push("X");
-
     specials.forEach(g=>{
-        if(count[g]) html += `${highlight(g)} : ${count[g]}개<br>`;
+        if(count[g]) html += `${boxHighlight(g)} : ${count[g]}개<br>`;
     });
-    if (specials.some(g=>count[g])) html += "<br>";
+    if(specials.some(g=>count[g])) html += "<br>";
 
     let line = "";
     order.filter(g=>!specials.includes(g)).forEach(g=>{
-        if(count[g]) line += `${highlight(g)}:${count[g]}개 `;
-    });
-
-    html += line.trim();
-    document.getElementById("boxResult").innerHTML = html;
-}
-function updateAccum(arr, grade, part, times){
-    const order = gradeOrders[part];
-    arr.forEach(v=>{
-        if(!accum[v]) accum[v]=0;
-        accum[v]++;
-    });
-    boxCount[grade] += times;
-
-    let html = "<b>누적 결과</b><br><br>";
-    html += "<b>누적 깐 상자 수</b><br>";
-    html += `D : ${boxCount.D}개&nbsp;&nbsp;`;
-    html += `C : ${boxCount.C}개&nbsp;&nbsp;`;
-    html += `B : ${boxCount.B}개&nbsp;&nbsp;`;
-    html += `A : ${boxCount.A}개<br><br>`;
-
-    const specials = [];
-    if(order.includes("X+")) specials.push("X+");
-    if(order.includes("X"))  specials.push("X");
-
-    specials.forEach(g=>{
-        if(accum[g]) html += `${highlight(g)} : ${accum[g]}개<br>`;
-    });
-    if (specials.some(g=>accum[g])) html += "<br>";
-
-    let line = "";
-    order.filter(g=>!specials.includes(g)).forEach(g=>{
-        if(accum[g]) line += `${highlight(g)}:${accum[g]}개 `;
+        if(count[g]) line += `${boxHighlight(g)}:${count[g]}개 `;
     });
     if(line==="") line = "아직 없음";
+    html += line;
+    document.getElementById("box_result").innerHTML = html;
 
-    html += line.trim();
-    document.getElementById("accumBox").innerHTML = html;
-}
-function resetAccum(){
-    accum = {};
-    boxCount = { D:0, C:0, B:0, A:0 };
-    document.getElementById("accumBox").innerHTML = "아직 없음";
-}
-function updateProbBox(){
-    const part  = getCurrentPart();
-    const grade = getCurrentGrade();
-    const table = ratesByPart[part][grade];
-    const order = gradeOrders[part];
+    // 누적 반영
+    resultArr.forEach(x=>{
+        if(!boxAccumCount[x]) boxAccumCount[x]=0;
+        boxAccumCount[x]++;
+    });
+    boxBoxCount[grade] += times;
 
-    let html = `<b>[${partLabel[part]} ${grade} 등급 상자 확률]</b><br><br>`;
-    const specials = [];
-    if(order.includes("X+")) specials.push("X+");
-    if(order.includes("X"))  specials.push("X");
+    let ahtml = "<b>누적 결과</b><br><br>";
+    ahtml += "<b>누적 깐 상자 수</b><br>";
+    ahtml += `D : ${boxBoxCount.D}개&nbsp;&nbsp;C : ${boxBoxCount.C}개&nbsp;&nbsp;B : ${boxBoxCount.B}개&nbsp;&nbsp;A : ${boxBoxCount.A}개<br><br>`;
 
     specials.forEach(g=>{
-        if(table[g] !== undefined){
-            html += `${highlight(g)} : ${formatPercent(table[g])}<br>`;
-        }
+        if(boxAccumCount[g]) ahtml += `${boxHighlight(g)} : ${boxAccumCount[g]}개<br>`;
     });
-    if (specials.some(g => table[g] !== undefined)) html += "<br>";
+    if(specials.some(g=>boxAccumCount[g])) ahtml += "<br>";
 
+    let line2="";
     order.filter(g=>!specials.includes(g)).forEach(g=>{
-        if(table[g] !== undefined){
-            html += `${highlight(g)} : ${formatPercent(table[g])}<br>`;
-        }
+        if(boxAccumCount[g]) line2 += `${boxHighlight(g)}:${boxAccumCount[g]}개 `;
     });
-    document.getElementById("probBox").innerHTML = html;
+    if(line2==="") line2="아직 없음";
+    ahtml += line2;
+    document.getElementById("box_accum").innerHTML = ahtml;
 }
-updateProbBox();
 
-/* ========== 장비 강화 시뮬레이션 ========== */
-/* 안전강화: 0~(safeTo-1)까지 100%, safeTo→safeTo+1부터 위험 */
-const safeToByType = {
-    weapon: 6,   // 6강까지 안전 (0~5)
-    armor: 4,    // 4강까지 안전 (0~3)
-    accessory: 3 // 3강까지 안전 (0~2)
-};
+/* ─────────────────────────────
+   장비 강화 시뮬레이터
+   ───────────────────────────── */
 
-/* 최대 강화 단계 */
-const maxEnhByType = {
-    weapon: 15,
-    armor: 10,
-    accessory: 8
-};
+// 안전구간 / 최대강
+const safeToByType = { weapon:6, armor:4, accessory:3 };
+const maxByType    = { weapon:15, armor:10, accessory:8 };
 
-/* 실제 성공확률 테이블 (현재단계 → 다음단계 성공률) */
+// 성공 확률 (시작 단계 → 다음 단계)
 const successRates = {
-    weapon: {
-        6: 0.60,
-        7: 0.50,
-        8: 0.40,
-        9: 0.30,
-        10: 0.25,
-        11: 0.20,
-        12: 0.15,
-        13: 0.10,
-        14: 0.05
+    weapon:{
+        6:0.60, 7:0.50, 8:0.40, 9:0.30,
+        10:0.25, 11:0.20, 12:0.15, 13:0.10, 14:0.05
     },
-    armor: {
-        4: 0.40,
-        5: 0.30,
-        6: 0.20,
-        7: 0.15,
-        8: 0.10,
-        9: 0.05
+    armor:{
+        4:0.40, 5:0.30, 6:0.20, 7:0.15, 8:0.10, 9:0.05
     },
-    accessory: {
-        3: 0.33,
-        4: 0.20,
-        5: 0.13,
-        6: 0.07,
-        7: 0.03
+    accessory:{
+        3:0.33, 4:0.20, 5:0.13, 6:0.07, 7:0.03
     }
 };
 
-let enhCurrentType = "weapon";
-let enhCurrentLevel = 0;
-let enhStats = {
-    scrolls: 0,
-    items: 0,
-    perLevel: {}
+let upgTimer = null;
+let upgLoopGuard = 0;
+const UPG_LOOP_MAX = 200000;
+
+let upgStats = {
+    scrolls:0,
+    items:0,
+    perLevel:{}
 };
 
-let autoTimer = null;
-let autoTargetLevel = 0;
-let autoLoopGuard = 0;
-const AUTO_MAX_LOOP = 200000;
-const LOG_MAX_LINES = 80;
+function ensureLevelStat(lv){
+    if(!upgStats.perLevel[lv]){
+        upgStats.perLevel[lv] = {success:0, keep:0, down:0, broke:0};
+    }
+}
 
-function getSuccessRate(type, level){
-    const safeTo = safeToByType[type];
-    const maxLv = maxEnhByType[type];
-
-    if(level >= maxLv) return 0;
-    if(level < safeTo) return 1.0;
-
+function upgradeSuccessRate(type, lv){
+    const maxLv  = maxByType[type];
+    const safeLv = safeToByType[type];
+    if(lv >= maxLv) return 0;
+    if(lv < safeLv) return 1.0;
     const table = successRates[type] || {};
-    if(table[level] !== undefined){
-        return table[level];
-    }
+    if(table[lv] !== undefined) return table[lv];
     return 0.01;
 }
 
-function ensureLevelStat(level){
-    if(!enhStats.perLevel[level]){
-        enhStats.perLevel[level] = {
-            success:0,
-            keep:0,
-            down:0,
-            broke:0
-        };
+function upgradeOnce(type, currentLevel){
+    const maxLv  = maxByType[type];
+    const safeLv = safeToByType[type];
+    let lv = currentLevel;
+    if(lv >= maxLv) return {level:lv, text:`이미 최대 강화(+${maxLv})입니다.`, cls:"info", noScroll:false};
+
+    upgStats.scrolls++;
+
+    const rate = upgradeSuccessRate(type, lv);
+    const r = Math.random();
+    if(r < rate){
+        // 성공
+        lv++;
+        if(lv > maxLv) lv = maxLv;
+        if(lv-1 >= safeLv){
+            ensureLevelStat(lv-1);
+            upgStats.perLevel[lv-1].success++;
+        }
+        return {level:lv, text:`+${currentLevel} → <b>성공</b> → +${lv}`, cls:"success", noScroll:false};
+    }else{
+        // 실패
+        if(lv < safeLv){
+            return {level:lv, text:`+${lv} → 실패 (안전구간, 단계 유지)`, cls:"keep", noScroll:false};
+        }else{
+            ensureLevelStat(lv);
+            const r2 = Math.random();
+            if(r2 < 1/3){
+                upgStats.perLevel[lv].keep++;
+                return {level:lv, text:`+${lv} → 실패 (단계 유지)`, cls:"keep", noScroll:false};
+            }else if(r2 < 2/3){
+                lv = Math.max(0, lv-1);
+                upgStats.perLevel[lv+1].down++;
+                return {level:lv, text:`+${lv+1} → 실패 (<b>하락</b>) → +${lv}`, cls:"down", noScroll:false};
+            }else{
+                upgStats.items++;
+                lv = 0;
+                upgStats.perLevel[currentLevel].broke++;
+                return {level:lv, text:`+${currentLevel} → 실패 (<b>파괴</b>) → 장비 파괴, +0부터 다시`, cls:"break", noScroll:false};
+            }
+        }
     }
 }
 
-function appendEnhLog(message, type){
-    const logBox = document.getElementById("enhLog");
+function appendUpgradeLog(msg, cls){
+    const el = document.getElementById("upg_log");
     const div = document.createElement("div");
-    div.className = "log-entry" + (type ? " log-" + type : "");
-    div.innerHTML = message;
+    div.style.fontSize="13px";
+    div.style.marginBottom="3px";
+    if(cls==="success") div.style.color="#16a34a";
+    else if(cls==="keep") div.style.color="#6b7280";
+    else if(cls==="down") div.style.color="#d97706";
+    else if(cls==="break") div.style.color="#ef4444";
+    else div.style.color="#e5e7eb";
 
-    if(logBox.firstChild){
-        logBox.insertBefore(div, logBox.firstChild);
-    }else{
-        logBox.appendChild(div);
-    }
+    div.innerHTML = msg;
+    if(el.firstChild) el.insertBefore(div, el.firstChild);
+    else el.appendChild(div);
 
-    while(logBox.children.length > LOG_MAX_LINES){
-        logBox.removeChild(logBox.lastChild);
+    // 오래된 로그 삭제
+    while(el.children.length > 80){
+        el.removeChild(el.lastChild);
     }
 }
 
-function updateEnhDisplay(){
-    document.getElementById("enhCurrentLevel").textContent = "+" + enhCurrentLevel;
-    const successRate = getSuccessRate(enhCurrentType, enhCurrentLevel);
-    document.getElementById("enhSuccessRate").textContent = Math.round(successRate*100) + "%";
+function updateUpgradeStatsDisplay(){
+    const safeLv = safeToByType[document.getElementById("upg_type").value];
+    const statsDiv = document.getElementById("upg_stats");
+    let html = "";
+    html += `누적 주문서 사용: <b>${upgStats.scrolls}</b> 개<br>`;
+    html += `누적 장비 파괴: <b>${upgStats.items}</b> 개<br><br>`;
 
-    const safeTo = safeToByType[enhCurrentType];
-    const badge = document.getElementById("enhSafeBadge");
-    if(enhCurrentLevel < safeTo){
-        badge.style.display = "inline-block";
-        badge.textContent = "안전강화 구간";
-    }else{
-        badge.style.display = "inline-block";
-        badge.textContent = "파괴/하락 가능 구간";
-    }
-
-    document.getElementById("statScrolls").textContent = enhStats.scrolls;
-    document.getElementById("statItems").textContent = enhStats.items;
-
-    const safeStart = safeToByType[enhCurrentType];
-    const container = document.getElementById("enhLevelStats");
-    const levels = Object.keys(enhStats.perLevel)
-        .map(x=>parseInt(x,10))
-        .filter(l => l >= safeStart)
-        .sort((a,b)=>a-b);
+    const levels = Object.keys(upgStats.perLevel)
+          .map(x=>parseInt(x,10))
+          .filter(l => l >= safeLv)
+          .sort((a,b)=>a-b);
 
     if(levels.length === 0){
-        container.textContent = "연속강화 시 단계별 통계가 여기에 표시됩니다.";
-    } else {
-        let html = "";
+        html += "아직 통계가 없습니다.";
+    }else{
         levels.forEach(l=>{
-            const st = enhStats.perLevel[l];
-            html += `<div class="enh-level-title">${l}강</div>`;
-            html += `<div class="enh-meta">성공 : ${st.success}회 / 유지 : ${st.keep}회 / 하락 : ${st.down}회 / 파괴 : ${st.broke}회</div>`;
+            const st = upgStats.perLevel[l];
+            html += `<b>${l}강</b> - 성공:${st.success} / 유지:${st.keep} / 하락:${st.down} / 파괴:${st.broke}<br>`;
         });
-        container.innerHTML = html;
     }
-
-    updateEnhProbBox();
+    statsDiv.innerHTML = html;
 }
 
-function updateEnhProbBox(){
-    const box = document.getElementById("enhProbBox");
-    const type = enhCurrentType;
-    const safeTo = safeToByType[type];
-    const maxLv = maxEnhByType[type];
+function updateUpgradeProb(){
+    const type = document.getElementById("upg_type").value;
+    const safeLv = safeToByType[type];
+    const maxLv  = maxByType[type];
+    const box = document.getElementById("upg_prob");
 
-    let label = (type === "weapon") ? "무기" : (type === "armor" ? "방어구" : "장신구");
+    let label = (type==="weapon"?"무기":type==="armor"?"방어구":"장신구");
     let html = `<b>[${label} 강화 확률]</b><br><br>`;
 
     for(let lv=0; lv<maxLv; lv++){
         const next = lv+1;
         let rate;
-        if(lv < safeTo){
+        if(lv < safeLv){
             rate = 1.0;
         }else{
-            const table = successRates[type] || {};
-            rate = table[lv];
+            const t = successRates[type] || {};
+            rate = t[lv];
             if(rate === undefined) rate = 0.01;
         }
-        let pct = Math.round(rate*10000)/100;
+        const pct = Math.round(rate*10000)/100;
         html += `${lv}강 → ${next}강 : <b>${pct}%</b>`;
-        if(lv < safeTo) html += " (안전강화)";
+        if(lv < safeLv) html += " (안전강화)";
         html += "<br>";
     }
     box.innerHTML = html;
 }
 
-function populateStartLevelOptions(){
-    const sel = document.getElementById("enhStartLevel");
-    sel.innerHTML = "";
-    const maxLv = maxEnhByType[enhCurrentType];
+function initUpgradeSelects(){
+    const typeSel = document.getElementById("upg_type");
+    const nowSel  = document.getElementById("upg_now");
+    const tgtSel  = document.getElementById("upg_target");
+    const type = typeSel.value;
+    const maxLv = maxByType[type];
+
+    nowSel.innerHTML = "";
+    tgtSel.innerHTML = "";
+
     for(let lv=0; lv<=maxLv; lv++){
-        const opt = document.createElement("option");
-        opt.value = lv;
-        opt.textContent = lv + "강";
-        if(lv === enhCurrentLevel) opt.selected = true;
-        sel.appendChild(opt);
+        const op = document.createElement("option");
+        op.value = lv;
+        op.textContent = lv + "강";
+        nowSel.appendChild(op);
+    }
+    for(let lv=1; lv<=maxLv; lv++){
+        const op = document.createElement("option");
+        op.value = lv;
+        op.textContent = lv + "강";
+        if(lv === maxLv) op.selected = true;
+        tgtSel.appendChild(op);
     }
 }
 
-function applyStartLevel(){
-    const sel = document.getElementById("enhStartLevel");
-    const lv = Number(sel.value);
-    const maxLv = maxEnhByType[enhCurrentType];
-    const clamped = Math.max(0, Math.min(maxLv, lv));
-    enhCurrentLevel = clamped;
-    appendEnhLog(`시작 강화 단계를 +${clamped}로 설정했습니다.`, "info");
-    populateStartLevelOptions();
-    populateTargetLevelOptions();
-    updateEnhDisplay();
+function resetUpgrade(){
+    upgStats = {scrolls:0, items:0, perLevel:{}};
+    document.getElementById("upg_log").innerHTML = "";
+    updateUpgradeStatsDisplay();
 }
 
-function doSingleEnhance(logSilent){
-    const prevLevel = enhCurrentLevel;
-    const type = enhCurrentType;
-    const maxLv = maxEnhByType[type];
-    const safeTo = safeToByType[type];
+function startUpgrade(){
+    if(upgTimer){
+        clearInterval(upgTimer);
+        upgTimer = null;
+    }
+    const type   = document.getElementById("upg_type").value;
+    const nowSel = document.getElementById("upg_now");
+    const tgtSel = document.getElementById("upg_target");
+    const speed  = Number(document.getElementById("upg_speed").value) || 1;
 
-    if(prevLevel >= maxLv){
-        if(!logSilent){
-            appendEnhLog(`이미 최대 강화 단계(+${maxLv})입니다.`, "info");
-        }
+    let currentLevel = Number(nowSel.value);
+    const targetLevel = Number(tgtSel.value);
+    const maxLv = maxByType[type];
+
+    if(targetLevel <= currentLevel){
+        appendUpgradeLog(`이미 목표 강화 단계(+${targetLevel}) 이상입니다.`, "info");
         return;
     }
 
-    enhStats.scrolls++;
+    const baseDelay = 70; // 기본 딜레이
+    const delay = Math.max(4, baseDelay / speed);
 
-    const successRate = getSuccessRate(type, prevLevel);
-    const r = Math.random();
-    let resultText = "";
-    let resultType = "info";
+    upgLoopGuard = 0;
 
-    if(r < successRate){
-        if(enhCurrentLevel < maxLv){
-            enhCurrentLevel++;
-        }
-        resultText = `+${prevLevel} → <b>강화 성공</b> → +${enhCurrentLevel}`;
-        if(prevLevel >= safeTo){
-            ensureLevelStat(prevLevel);
-            enhStats.perLevel[prevLevel].success++;
-        }
-        resultType = "success";
-    }else{
-        if(prevLevel < safeTo){
-            resultText = `+${prevLevel} → 실패 (안전구간, 단계 유지)`;
-            resultType = "keep";
-        }else{
-            const r2 = Math.random();
-            ensureLevelStat(prevLevel);
-            if(r2 < 1/3){
-                resultText = `+${prevLevel} → 실패 (단계 유지)`;
-                enhStats.perLevel[prevLevel].keep++;
-                resultType = "keep";
-            }else if(r2 < 2/3){
-                enhCurrentLevel = Math.max(0, enhCurrentLevel - 1);
-                resultText = `+${prevLevel} → 실패 (<b>하락</b>) → +${enhCurrentLevel}`;
-                enhStats.perLevel[prevLevel].down++;
-                resultType = "down";
-            }else{
-                enhStats.items++;
-                enhCurrentLevel = 0;
-                resultText = `+${prevLevel} → 실패 (<b>파괴</b>) → 장비 파괴, +0부터 다시`;
-                enhStats.perLevel[prevLevel].broke++;
-                resultType = "break";
-            }
-        }
-    }
-
-    if(!logSilent){
-        appendEnhLog(resultText, resultType);
-    }
-    updateEnhDisplay();
-}
-
-function onAutoToggle(){
-    const chk = document.getElementById("enhAutoCheck").checked;
-    document.getElementById("autoOptions").style.display = chk ? "block" : "none";
-
-    if(!chk && autoTimer){
-        clearInterval(autoTimer);
-        autoTimer = null;
-        appendEnhLog("연속강화를 중단했습니다.", "info");
-    }
-}
-
-function doAutoEnhance(){
-    if(!document.getElementById("enhAutoCheck").checked) return;
-
-    const target = Number(document.getElementById("enhTargetLevel").value);
-    const maxLv = maxEnhByType[enhCurrentType];
-    const speed = Number(document.getElementById("enhSpeed").value) || 2;
-
-    autoTargetLevel = Math.min(target, maxLv);
-
-    if(autoTargetLevel <= enhCurrentLevel){
-        appendEnhLog(`이미 +${autoTargetLevel} 이상입니다.`, "info");
-        return;
-    }
-
-    if(autoTimer){
-        clearInterval(autoTimer);
-        autoTimer = null;
-    }
-
-    autoLoopGuard = 0;
-
-    const baseDelay = 40;
-    const delay = Math.max(3, baseDelay / speed);
-
-    autoTimer = setInterval(()=>{
-        autoLoopGuard++;
-        if(autoLoopGuard > AUTO_MAX_LOOP){
-            clearInterval(autoTimer);
-            autoTimer = null;
-            appendEnhLog("연속강화가 너무 오래 걸려 중단되었습니다. (보호장치 발동)", "info");
-            updateEnhDisplay();
+    upgTimer = setInterval(()=>{
+        upgLoopGuard++;
+        if(upgLoopGuard > UPG_LOOP_MAX){
+            clearInterval(upgTimer);
+            upgTimer = null;
+            appendUpgradeLog("강화가 너무 오래 걸려 자동으로 중지되었습니다. (보호장치)", "info");
             return;
         }
 
-        const maxLvNow = maxEnhByType[enhCurrentType];
-
-        if(enhCurrentLevel >= autoTargetLevel || enhCurrentLevel >= maxLvNow){
-            clearInterval(autoTimer);
-            autoTimer = null;
-            appendEnhLog(`연속강화 종료 : 최종 +${enhCurrentLevel} 도달 (목표 +${autoTargetLevel})`, "info");
-            updateEnhDisplay();
+        if(currentLevel >= targetLevel || currentLevel >= maxLv){
+            clearInterval(upgTimer);
+            upgTimer = null;
+            appendUpgradeLog(`강화 종료: 최종 +${currentLevel} 도달 (목표 +${targetLevel})`, "info");
+            // 현재 단계 select 업데이트
+            document.getElementById("upg_now").value = currentLevel;
             return;
         }
 
-        doSingleEnhance(false);
+        const res = upgradeOnce(type, currentLevel);
+        currentLevel = res.level;
+        appendUpgradeLog(res.text, res.cls);
+        updateUpgradeStatsDisplay();
+        document.getElementById("upg_now").value = currentLevel;
+
     }, delay);
 }
 
-function stopAutoEnhance(){
-    if(autoTimer){
-        clearInterval(autoTimer);
-        autoTimer = null;
-        appendEnhLog("연속강화를 중지했습니다.", "info");
-        updateEnhDisplay();
+function stopUpgrade(){
+    if(upgTimer){
+        clearInterval(upgTimer);
+        upgTimer = null;
+        appendUpgradeLog("강화를 수동으로 중지했습니다.", "info");
     }
 }
 
-function resetEnhStats(){
-    enhStats = { scrolls:0, items:0, perLevel:{} };
-    appendEnhLog("강화 통계를 초기화했습니다.", "info");
-    updateEnhDisplay();
+/* ─────────────────────────────
+   스탯 효율 계산기 (딜+회피 균형)
+   ───────────────────────────── */
+
+const STAT_LS_KEY = "bladeup_stat_calc_A_only";
+
+function avgMultiplierFromCrit(crit){
+    if(crit <= 100){
+        return 1 + 0.005 * crit;
+    }else{
+        return 0.5 + 0.01 * crit;
+    }
 }
 
-document.getElementById("enhTypeSelect").addEventListener("change", (e)=>{
-    enhCurrentType = e.target.value;
-    enhCurrentLevel = 0;
-    appendEnhLog("장비 종류를 변경했습니다.", "info");
-    populateStartLevelOptions();
-    populateTargetLevelOptions();
-    updateEnhDisplay();
+function saveStatInputs(str, dex, atk, crit, evade){
+    try{
+        const obj = {str, dex, atk, crit, evade};
+        localStorage.setItem(STAT_LS_KEY, JSON.stringify(obj));
+    }catch(e){}
+}
+
+function loadStatInputs(){
+    try{
+        const raw = localStorage.getItem(STAT_LS_KEY);
+        if(!raw) return;
+        const obj = JSON.parse(raw);
+        if(typeof obj.str   === "number") document.getElementById("statStr").value   = obj.str;
+        if(typeof obj.dex   === "number") document.getElementById("statDex").value   = obj.dex;
+        if(typeof obj.atk   === "number") document.getElementById("statAtk").value   = obj.atk;
+        if(typeof obj.crit  === "number") document.getElementById("statCrit").value  = obj.crit;
+        if(typeof obj.evade === "number") document.getElementById("statEvade").value = obj.evade;
+    }catch(e){}
+}
+
+function runStatCalc(){
+    const strVal   = parseFloat(document.getElementById("statStr").value);
+    const dexVal   = parseFloat(document.getElementById("statDex").value);
+    const atkVal   = parseFloat(document.getElementById("statAtk").value);
+    const critVal  = parseFloat(document.getElementById("statCrit").value);
+    const evadeVal = parseFloat(document.getElementById("statEvade").value);
+    const out = document.getElementById("statResult");
+
+    if(isNaN(strVal) || isNaN(dexVal) || isNaN(atkVal) || isNaN(critVal) || isNaN(evadeVal)){
+        out.innerHTML = "모든 값을 숫자로 정확히 입력해주세요. (STR, DEX, 공격력, 치명, 회피 수치)";
+        return;
+    }
+    if(strVal < 0 || dexVal < 0){
+        out.innerHTML = "STR과 DEX는 0 이상이어야 합니다.";
+        return;
+    }
+
+    const totalStat = strVal + dexVal;
+    if(totalStat <= 0){
+        out.innerHTML = "총 스탯(STR+DEX)이 0 이하입니다. 값을 다시 확인해주세요.";
+        return;
+    }
+
+    // 현재 스탯에서 스탯 기여분을 빼고 "기본" 추정
+    const baseAtk   = atkVal   - strVal * 0.35;
+    const baseCrit  = critVal  - dexVal * 0.18;
+    const baseEvade = evadeVal - dexVal * 0.18; // 장비/기본 회피 수치
+
+    function appliedEvade(evStat){
+        if(evStat <= 0) return 0;
+        return (evStat / (evStat + 100)) * 100;
+    }
+
+    // 특정 STR/DEX 배분에서 딜/회피/생존/효율 계산
+    function calcAll(STR_new, DEX_new){
+        const atk_new   = baseAtk   + STR_new * 0.35;
+        const crit_new  = baseCrit  + DEX_new * 0.18;
+        const evStatNew = baseEvade + DEX_new * 0.18;
+
+        const mult      = avgMultiplierFromCrit(crit_new);
+        const dps       = atk_new * mult;
+
+        const evadeAppliedRaw = appliedEvade(evStatNew);
+        // 효율 계산에서는 실제 회피율을 최대 50%까지만 반영
+        const evadeForSurvival = Math.min(evadeAppliedRaw, 50);
+
+        let hitChance = 1 - (evadeForSurvival / 100); // 몬스터 명중 100% 가정
+        if(hitChance < 0.01) hitChance = 0.01;        // 너무 낮으면 바닥값 1%
+
+        const survivalScore = 1 / hitChance;
+        const effScore      = dps * survivalScore;
+
+        return {
+            dps,
+            atk: atk_new,
+            crit: crit_new,
+            evStat: evStatNew,
+            evadeApplied: evadeAppliedRaw,
+            survivalScore,
+            effScore
+        };
+    }
+
+    // 현재 상태
+    const current = calcAll(strVal, dexVal);
+    const currentDps = current.dps;
+    const currentEff = current.effScore;
+
+    // 가상 배분 테스트를 위한 기준 데이터 저장
+    window._statBaseData = {
+        baseAtk,
+        baseCrit,
+        baseEvade,
+        totalStat,
+        currentEff,
+        currentDps,
+        currentEvadeApplied: current.evadeApplied
+    };
+
+    // 딜+생존 균형 기준 최적 탐색
+    let bestEff      = -Infinity;
+    let bestEffDex   = dexVal;
+    let bestEffData  = null;
+
+    const totalInt = Math.round(totalStat);
+    for(let d=0; d<=totalInt; d++){
+        const STR_new = totalStat - d;
+        const res = calcAll(STR_new, d);
+        if(res.effScore > bestEff){
+            bestEff     = res.effScore;
+            bestEffDex  = d;
+            bestEffData = res;
+        }
+    }
+
+    const bestEffStr = totalStat - bestEffDex;
+    const diffEffPercent = ((bestEff / currentEff) - 1) * 100;
+    const diffEffRounded = Math.round(diffEffPercent * 10) / 10;
+
+    // 포인트당 STR / DEX 딜 효율 & 회피 효율 (현재 위치 기준)
+    const multCritNow = avgMultiplierFromCrit(critVal);
+    const deltaDStr   = 0.35 * multCritNow; // STR 1 → 공격력 +0.35
+
+    const multCritDex = avgMultiplierFromCrit(critVal + 0.18);
+    const deltaDDex   = atkVal * (multCritDex - multCritNow);
+
+    const evBefore = evadeVal;
+    const evAfter  = evadeVal + 0.18;
+
+    const appliedBefore = appliedEvade(evBefore);
+    const appliedAfter  = appliedEvade(evAfter);
+    const diffApplied   = appliedAfter - appliedBefore;
+
+    const evBeforeStr  = isFinite(appliedBefore) ? appliedBefore.toFixed(2) : "0.00";
+    const evAfterStr   = isFinite(appliedAfter)  ? appliedAfter.toFixed(2)  : "0.00";
+    const evDiffStr    = isFinite(diffApplied)   ? diffApplied.toFixed(3)   : "0.000";
+
+    let ratioText = "";
+    if(deltaDDex > 0){
+        const ratio = deltaDStr / deltaDDex;
+        const ratioRound = Math.round(ratio * 10) / 10;
+        ratioText = `(현재 기준 STR 1포인트가 DEX 1포인트보다 약 <b>${ratioRound}</b>배 정도 딜 효율이 높습니다.)`;
+    }
+
+    // 입력값 저장
+    saveStatInputs(strVal, dexVal, atkVal, critVal, evadeVal);
+
+    // 결과 출력
+    let msg = "";
+
+    // 현재 상태
+    msg += `<b>현재 배분</b><br>`;
+    msg += `STR: <b>${strVal}</b>, DEX: <b>${dexVal}</b><br>`;
+    msg += `평균 딜: 약 <b>${currentDps.toFixed(2)}</b><br>`;
+    msg += `실제 적용 회피: 약 <b>${current.evadeApplied.toFixed(2)}%</b><br><br>`;
+
+    // 포인트당 효율
+    msg += `<b>포인트당 효율 (현재 스탯 기준)</b><br>`;
+    msg += `STR 1 찍으면: 평균 딜 약 <b>${deltaDStr.toFixed(3)}</b> 증가<br>`;
+    msg += `DEX 1 찍으면: 평균 딜 약 <b>${deltaDDex.toFixed(3)}</b> 증가<br>`;
+    msg += ratioText ? (ratioText + "<br><br>") : "<br>";
+
+    // DEX 1포인트 회피 효율
+    msg += `<b>DEX 1포인트의 회피 효율</b><br>`;
+    msg += `표기 회피 수치: <b>${evBefore.toFixed(2)} → ${evAfter.toFixed(2)}</b> ( +0.18 )<br>`;
+    msg += `실제 적용 회피: <b>${evBeforeStr}% → ${evAfterStr}%</b><br>`;
+    msg += `⇒ 실제로는 약 <b>${evDiffStr}%p</b> 정도만 회피가 늘어납니다.<br><br>`;
+
+    // 딜+생존 균형 기준 최적 배분
+    msg += `<b>딜 + 생존(회피) 균형 기준 최적 배분</b><br>`;
+    msg += `추천 배분: DEX <b>${bestEffDex}</b>, STR <b>${bestEffStr}</b><br>`;
+    msg += `예상 평균 딜: 약 <b>${bestEffData.dps.toFixed(2)}</b><br>`;
+    msg += `추천 분배 시 최종 공격력: 약 <b>${bestEffData.atk.toFixed(2)}</b><br>`;
+    msg += `추천 분배 시 최종 회피 수치(X): <b>${bestEffData.evStat.toFixed(2)}</b><br>`;
+    msg += `추천 분배 시 실제 회피: 약 <b>${bestEffData.evadeApplied.toFixed(2)}%</b><br>`;
+    msg += `현재 대비 총 효율(DPS×생존) 변화: <b>${diffEffRounded}%</b>${diffEffRounded > 0 ? " 증가" : (diffEffRounded < 0 ? " 감소" : " 변화 없음")}<br><br>`;
+
+    // 가상 스탯 배분 테스트 UI
+    msg += `<hr><b>가상 스탯 배분 테스트</b><br>`;
+    msg += `아래는 예상 스탯 미리보기 입니다.<br>`;
+    msg += `아래 STR / DEX 값을 수정해 보며, 가상 배분 효율을 확인해 보세요.<br>`;
+    msg += `STR: <input type="number" id="statHypoStr" value="${bestEffStr}" style="width:80px"> `;
+    msg += `DEX: <input type="number" id="statHypoDex" value="${bestEffDex}" style="width:80px"> `;
+    msg += `<button type="button" onclick="runCustomStatTest()">가상 배분 계산</button><br>`;
+    msg += `<div id="statHypoResult" style="margin-top:8px;"></div><br>`;
+    msg += `<small>※ 이 계산기는 CON은 계산에서 제외했습니다.</small>`;
+
+    out.innerHTML = msg;
+}
+
+/* ─────────────────────────────
+   초기 실행
+   ───────────────────────────── */
+window.addEventListener("load", ()=>{
+    applyDarkModeFromStorage();
+    updateBoxProb();
+    initUpgradeSelects();
+    updateUpgradeStatsDisplay();
+    updateUpgradeProb();
+    loadStatInputs();
 });
-
-function populateTargetLevelOptions(){
-    const sel = document.getElementById("enhTargetLevel");
-    sel.innerHTML = "";
-    const maxLv = maxEnhByType[enhCurrentType];
-    for(let lv=1; lv<=maxLv; lv++){
-        const opt = document.createElement("option");
-        opt.value = lv;
-        opt.textContent = lv + "강";
-        if(lv === maxLv) opt.selected = true;
-        sel.appendChild(opt);
-    }
-}
-
-(function initEnh(){
-    populateStartLevelOptions();
-    populateTargetLevelOptions();
-    updateEnhDisplay();
-})();
 </script>
 
 </body>
