@@ -19,6 +19,7 @@
     .container{
         width:1250px;
         margin:auto;
+        position:relative;
     }
 
     .card{
@@ -49,7 +50,7 @@
         border:1px solid #555;
     }
 
-    button{
+    .card button{
         width:100%;
         padding:12px;
         margin-top:12px;
@@ -60,7 +61,7 @@
         font-size:16px;
         cursor:pointer;
     }
-    button:hover{ background:#3a55d8; }
+    .card button:hover{ background:#3a55d8; }
 
     .r{
         margin-top:15px;
@@ -94,22 +95,113 @@
 
     /* 다크모드 스위치 */
     .dm-switch{
-        position:fixed;
-        top:20px;
+        position:absolute;
+        top:10px;
         right:20px;
-        padding:10px 14px;
+        padding:6px 10px;
         background:#4A6CFF;
         color:white;
         border:none;
-        border-radius:8px;
+        border-radius:6px;
         cursor:pointer;
+        z-index:10;
+        width:auto;
+        font-size:13px;
+    }      cursor:pointer;
         z-index:999;
     }
+
+    /* 레트로(바람의검 감성) 테마 */
+    .retro-switch{
+        position:absolute;
+        top:10px;
+        right:110px;
+        padding:6px 10px;
+        background:#8b5a2b;
+        color:#f9f5e7;
+        border:1px solid #d2b48c;
+        border-radius:6px;
+        cursor:pointer;
+        z-index:10;
+        width:auto;
+        font-size:13px;
+    }
+        font-family: "Malgun Gothic", "굴림", system-ui, sans-serif;
+        font-size:13px;
+        box-shadow:0 0 0 2px rgba(0,0,0,0.15);
+    }
+    .retro-switch:hover{
+        background:#a66a33;
+    }
+
+    body.retro-theme{
+        background:url('retro_wall.png') repeat;
+        color:#f9f5e7;
+    }
+    body.retro-theme .container{
+        background:rgba(15, 10, 6, 0.92);
+        border-radius:12px;
+        box-shadow:0 0 0 2px #3b2614;
+        padding-bottom:24px;
+    }
+    body.retro-theme .card{
+        background:url('retro_wood_panel.png') repeat;
+        border-radius:0;
+        border:2px solid #c49a6c;
+        box-shadow:inset 0 0 0 1px #000;
+    }
+    body.retro-theme h2{
+        color:#ffe4b5;
+        text-shadow:1px 1px 0 #000;
+        border-bottom:1px solid #c49a6c;
+        padding-bottom:4px;
+        margin-bottom:8px;
+    }
+    body.retro-theme label{
+        color:#f3e2c0;
+    }
+    body.retro-theme input,
+    body.retro-theme select{
+        background:#2b1a10;
+        border:1px solid #c49a6c;
+        color:#f9f5e7;
+    }
+    body.retro-theme .r{
+        background:#2b1a10;
+        color:#f9f5e7;
+    }
+    body.retro-theme .card button{
+        background:url('retro_button_hex.png') no-repeat center center;
+        background-size:contain;
+        height:60px;
+        padding:0 24px;
+        color:#f4e0a8;
+        border:none;
+        border-radius:0;
+        box-shadow:0 2px 0 #5d3b1a, 0 3px 4px rgba(0,0,0,0.4);
+        font-weight:600;
+        text-shadow:1px 1px 0 #3b2614;
+    }
+    body.retro-theme .card button:hover{
+        filter:brightness(1.05);
+    }
+    body.retro-theme .card button:active{
+        transform:translateY(1px);
+        box-shadow:0 1px 0 #5d3b1a, 0 2px 3px rgba(0,0,0,0.4);
+    }
+
+body.retro-theme .dm-switch,
+body.retro-theme .retro-switch{
+    background:#8b5a2b;
+    color:#f9f5e7;
+    border:1px solid #d2b48c;
+}
 </style>
 </head>
 <body>
 
-<button class="dm-switch" onclick="toggleDarkMode()"> 다크모드 전환</button>
+<button class="dm-switch" onclick="toggleDarkMode()">다크 모드</button>
+<button class="retro-switch" onclick="toggleRetroTheme()">레트로 테마</button>
 
 <div class="container">
 
@@ -246,10 +338,83 @@
 
 
     <!-- ─────────────────────────────── -->
-    <!-- 스탯 효율 계산기 (STR vs DEX) – 자동 최적화 -->
+    <
+
+    <!-- ─────────────────────────────── -->
+    <!-- 상자 + 강화 종합 시뮬레이터 (베타) -->
+    <!-- ─────────────────────────────── -->
+    <div class="card">
+        <h2>상자 + 강화 종합 시뮬레이터 (베타)</h2>
+        <p style="font-size:13px; margin-bottom:8px;">
+            특정 장비를 <b>상자에서 뽑고</b>, 목표 강화까지 올릴 때까지 드는
+            <b>평균 상자 개수 / 주문서 개수 / 비용</b>을 대략적으로 시뮬레이션합니다.
+        </p>
+
+        <div style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end;">
+            <div>
+                <label>장비 종류</label><br>
+                <select id="tc_part">
+                    <option value="weapon">무기</option>
+                    <option value="armor">방어구</option>
+                    <option value="accessory">장신구</option>
+                </select>
+            </div>
+
+            <div>
+                <label>노리는 등급</label><br>
+                <select id="tc_tier">
+                    <option value="X">X</option>
+                    <option value="X+">X+</option>
+                </select>
+                <div style="font-size:11px; color:#6b7280;">
+                    무기가 아닐 때는 자동으로 X만 사용됩니다.
+                </div>
+            </div>
+
+            <div>
+                <label>상자 등급</label><br>
+                <select id="tc_boxGrade">
+                    <option value="C">C 상자 (20만 골드)</option>
+                    <option value="A">A 상자 (3900 다이아)</option>
+                </select>
+            </div>
+
+            <div>
+                <label>목표 강화 단계</label><br>
+                <select id="tc_targetLv">
+                    <option value="5">+5</option>
+                    <option value="6">+6</option>
+                    <option value="7">+7</option>
+                    <option value="8">+8</option>
+                    <option value="9">+9</option>
+                    <option value="10" selected>+10</option>
+                    <option value="11">+11</option>
+                    <option value="12">+12</option>
+                    <option value="13">+13</option>
+                    <option value="14">+14</option>
+                    <option value="15">+15</option>
+                </select>
+            </div>
+
+            <div>
+                <label>시뮬레이션 횟수</label><br>
+                <input type="number" id="tc_runs" value="500" min="10" max="5000" step="10" style="width:90px;">
+                <div style="font-size:11px; color:#6b7280;">값이 클수록 평균이 안정적입니다.</div>
+            </div>
+
+            <div>
+                <button onclick="runTotalCostSim()">종합 시뮬레이션 실행</button>
+            </div>
+        </div>
+
+        <div class="r" id="tc_result" style="margin-top:12px;">
+            아직 시뮬레이션을 실행하지 않았습니다.
+        </div>
+    </div>
+
     <!-- ─────────────────────────────── -->
     <div class="card stat-card">
-        <h2>스탯 효율 계산기(임시기능)</h2>
+        <h2>스탯 효율 계산기 (딜 + 회피 균형)</h2>
 
         <div class="stat-grid">
             <div>
@@ -325,7 +490,6 @@ function runCustomStatTest(){
     const mult      = avgMultiplierFromCrit(crit_new);
     const dps       = atk_new * mult;
 
-    // 실제 회피율 (표기 그대로) 및 효율용 회피율(50% 캡)
     const evadeAppliedRaw = (evStatNew <= 0) ? 0 : (evStatNew / (evStatNew + 100)) * 100;
     const evadeForSurvival = Math.min(evadeAppliedRaw, 50);
 
@@ -355,10 +519,207 @@ function runCustomStatTest(){
     out.innerHTML = msg;
 }
 
+
+// 상자 + 강화 종합 시뮬레이터
+const BOX_COST_GOLD_C = 200000;
+const BOX_COST_DIA_A  = 3900;
+
+function getScrollCostByPart(part){
+    if(part === "accessory") return 200000; // 장신구
+    return 100000; // 무기, 방어구
+}
+
+// boxRatesByPart, upgradeSuccessRate, maxByType, safeToByType 이미 정의되어 있음
+
+function simulateBoxesForTier(part, boxGrade, targetTier){
+    const table = boxRatesByPart[part][boxGrade];
+    if(!table){
+        return {boxes:0, hit:false};
+    }
+    const entries = Object.entries(table);
+    const totalP  = entries.reduce((s,[,v])=>s+v,0);
+
+    let boxes = 0;
+    while(true){
+        boxes++;
+        let r = Math.random() * totalP;
+        let sum = 0;
+        let got = null;
+        for(const [grade, p] of entries){
+            sum += p;
+            if(r <= sum){
+                got = grade;
+                break;
+            }
+        }
+        if(got === targetTier){
+            return {boxes, hit:true};
+        }
+        if(boxes > 1000000){
+            return {boxes, hit:false};
+        }
+    }
+}
+
+function simulateUpgradeToTarget(part, targetLevel){
+    const maxLv  = maxByType[part];
+    const safeLv = safeToByType[part];
+    let lv = 0;
+    let scrolls = 0;
+    let breaks  = 0;
+
+    if(targetLevel > maxLv) targetLevel = maxLv;
+
+    while(lv < targetLevel){
+        scrolls++;
+        const rate = upgradeSuccessRate(part, lv);
+        const r = Math.random();
+        if(r < rate){
+            lv++;
+            if(lv > maxLv) lv = maxLv;
+        }else{
+            if(lv < safeLv){
+                // 안전 구간: 유지
+            }else{
+                const r2 = Math.random();
+                if(r2 < 1/3){
+                    // 유지
+                }else if(r2 < 2/3){
+                    lv = Math.max(0, lv-1);
+                }else{
+                    lv = 0;
+                    breaks++;
+                }
+            }
+        }
+        if(scrolls > 1000000){
+            break;
+        }
+    }
+    return {scrolls, breaks};
+}
+
+
+function updateTotalCostTargetOptions(){
+    const partSel = document.getElementById("tc_part");
+    const targetSel = document.getElementById("tc_targetLv");
+    if(!partSel || !targetSel) return;
+
+    let maxLv;
+    if(partSel.value === "weapon"){
+        maxLv = maxByType.weapon;
+    }else if(partSel.value === "armor"){
+        maxLv = maxByType.armor;
+    }else{
+        maxLv = maxByType.accessory;
+    }
+
+    const currentVal = parseInt(targetSel.value, 10) || maxLv;
+    targetSel.innerHTML = "";
+    for(let lv = 1; lv <= maxLv; lv++){
+        const opt = document.createElement("option");
+        opt.value = String(lv);
+        opt.textContent = "+" + lv;
+        if(lv === Math.min(currentVal, maxLv)){
+            opt.selected = true;
+        }
+        targetSel.appendChild(opt);
+    }
+}
+function runTotalCostSim(){
+    const partSel = document.getElementById("tc_part");
+    const tierSel = document.getElementById("tc_tier");
+    const boxSel  = document.getElementById("tc_boxGrade");
+    const targetSel = document.getElementById("tc_targetLv");
+    const runsInput = document.getElementById("tc_runs");
+    const out = document.getElementById("tc_result");
+
+    if(!partSel || !tierSel || !boxSel || !targetSel || !runsInput || !out){
+        return;
+    }
+
+    let part = partSel.value;
+    let tier = tierSel.value;
+    const boxGrade = boxSel.value;
+    let targetLevel = parseInt(targetSel.value, 10);
+    let runs = parseInt(runsInput.value, 10);
+
+    if(part !== "weapon"){
+        tier = "X";
+        tierSel.value = "X";
+    }
+
+    if(isNaN(targetLevel) || targetLevel < 1) targetLevel = 10;
+    if(isNaN(runs) || runs < 10) runs = 10;
+    if(runs > 5000) runs = 5000;
+
+    let totalBoxes = 0;
+    let totalScrolls = 0;
+    let totalBreaks  = 0;
+
+    for(let i=0;i<runs;i++){
+        const boxSim = simulateBoxesForTier(part, boxGrade, tier);
+        totalBoxes += boxSim.boxes;
+
+        const upgSim = simulateUpgradeToTarget(part, targetLevel);
+        totalScrolls += upgSim.scrolls;
+        totalBreaks  += upgSim.breaks;
+    }
+
+    const avgBoxes   = totalBoxes / runs;
+    const avgScrolls = totalScrolls / runs;
+    const avgBreaks  = totalBreaks / runs;
+
+    const scrollCost = getScrollCostByPart(part);
+
+    // 정수 기준으로 보여주기 위해 반올림 처리
+    const boxesInt   = Math.round(avgBoxes);
+    const scrollsInt = Math.round(avgScrolls);
+    const breaksInt  = Math.round(avgBreaks);
+
+    const avgScrollGold = scrollsInt * scrollCost;
+
+    let boxCostText = "";
+    if(boxGrade === "C"){
+        const avgBoxGold = boxesInt * BOX_COST_GOLD_C;
+        boxCostText = `평균 상자 비용: 약 <b>${boxesInt.toLocaleString()}개</b> (≈ <b>${avgBoxGold.toLocaleString()} 골드</b>)`;
+    }else{
+        const avgBoxDia = boxesInt * BOX_COST_DIA_A;
+        boxCostText = `평균 상자 비용: 약 <b>${boxesInt.toLocaleString()}개</b> (≈ <b>${avgBoxDia.toLocaleString()} 다이아</b>)`;
+    }
+
+    let msg = "";
+    msg += `장비 종류: <b>${part === "weapon" ? "무기" : (part === "armor" ? "방어구" : "장신구")}</b><br>`;
+    msg += `노리는 등급: <b>${tier}</b>, 상자: <b>${boxGrade} 등급</b>, 목표 강화: <b>+${targetLevel}</b><br><br>`;
+    msg += `${boxCostText}<br>`;
+    msg += `평균 사용 강화 주문서: 약 <b>${scrollsInt.toLocaleString()}장</b> (≈ <b>${avgScrollGold.toLocaleString()} 골드</b>)<br>`;
+    msg += `평균 장비 파괴 횟수: 약 <b>${breaksInt.toLocaleString()}회</b><br>`;
+    msg += `<small>※ 확률 기반 대략적인 평균값입니다. 개별 시도에서는 운에 따라 크게 차이날 수 있습니다.</small>`;
+
+    out.innerHTML = msg;
+}
+
 /* ─────────────────────────────
    공통: 다크 모드
    ───────────────────────────── */
 const DARK_KEY = "bladeup_dark_mode";
+
+const RETRO_KEY = "bladeup_retro_theme";
+
+function applyRetroFromStorage(){
+    const v = localStorage.getItem(RETRO_KEY);
+    if(v === "1"){
+        document.body.classList.add("retro-theme");
+    }else{
+        document.body.classList.remove("retro-theme");
+    }
+}
+
+function toggleRetroTheme(){
+    const isRetro = document.body.classList.toggle("retro-theme");
+    localStorage.setItem(RETRO_KEY, isRetro ? "1" : "0");
+}
+
 
 function applyDarkModeFromStorage(){
     const v = localStorage.getItem(DARK_KEY);
@@ -1062,13 +1423,13 @@ function runStatCalc(){
 
     // 가상 스탯 배분 테스트 UI
     msg += `<hr><b>가상 스탯 배분 테스트</b><br>`;
-    msg += `아래는 예상 스탯 미리보기 입니다.<br>`;
+    msg += `어디까지나 정답은 없고, 체감상 실 회피율 50%를 기준으로 합니다.<br>`;
     msg += `아래 STR / DEX 값을 수정해 보며, 가상 배분 효율을 확인해 보세요.<br>`;
     msg += `STR: <input type="number" id="statHypoStr" value="${bestEffStr}" style="width:80px"> `;
     msg += `DEX: <input type="number" id="statHypoDex" value="${bestEffDex}" style="width:80px"> `;
     msg += `<button type="button" onclick="runCustomStatTest()">가상 배분 계산</button><br>`;
     msg += `<div id="statHypoResult" style="margin-top:8px;"></div><br>`;
-    msg += `<small>※ 이 계산기는 CON은 계산에서 제외했습니다.</small>`;
+    msg += `<small>※ 이 계산기는 <b>딜(공격력×치명)</b>과 회피 공식(회피/(회피+100))을 함께 사용해, 몬스터 명중률을 100%로 가정한 상대적인 "딜×생존" 효율이 최대가 되는 STR/DEX 배분을 찾습니다. CON은 계산에서 제외했습니다.</small>`;
 
     out.innerHTML = msg;
 }
@@ -1078,11 +1439,17 @@ function runStatCalc(){
    ───────────────────────────── */
 window.addEventListener("load", ()=>{
     applyDarkModeFromStorage();
+    applyRetroFromStorage();
     updateBoxProb();
     initUpgradeSelects();
     updateUpgradeStatsDisplay();
     updateUpgradeProb();
     loadStatInputs();
+    updateTotalCostTargetOptions();
+    const partSel = document.getElementById("tc_part");
+    if(partSel){
+        partSel.addEventListener("change", updateTotalCostTargetOptions);
+    }
 });
 </script>
 
