@@ -68,7 +68,6 @@
         background:#f3f6ff;
         padding:15px;
         border-radius:12px;
-        /* 결과 영역 전체를 한 번에 보기 위해 스크롤 제거 */
         max-height:none;
         overflow-y:visible;
         line-height:1.6;
@@ -85,10 +84,10 @@
         gap:12px;
     }
 
-    /* 노란 하이라이트 (다크모드 대비 수정본) */
+    /* 노란 하이라이트 */
     .yellow-highlight{
         background:#ffeb3b;
-        color:#111827; /* 어두운 글자색으로 변경 → 다크모드에서도 잘 보임 */
+        color:#111827; 
         padding:0 4px;
         border-radius:4px;
     }
@@ -104,11 +103,9 @@
         border:none;
         border-radius:6px;
         cursor:pointer;
-        z-index:10;
+        z-index:999;
         width:auto;
         font-size:13px;
-    }      cursor:pointer;
-        z-index:999;
     }
 
     /* 레트로(바람의검 감성) 테마 */
@@ -122,12 +119,10 @@
         border:1px solid #d2b48c;
         border-radius:6px;
         cursor:pointer;
-        z-index:10;
+        z-index:999;
         width:auto;
         font-size:13px;
-    }
         font-family: "Malgun Gothic", "굴림", system-ui, sans-serif;
-        font-size:13px;
         box-shadow:0 0 0 2px rgba(0,0,0,0.15);
     }
     .retro-switch:hover{
@@ -190,12 +185,12 @@
         box-shadow:0 1px 0 #5d3b1a, 0 2px 3px rgba(0,0,0,0.4);
     }
 
-body.retro-theme .dm-switch,
-body.retro-theme .retro-switch{
-    background:#8b5a2b;
-    color:#f9f5e7;
-    border:1px solid #d2b48c;
-}
+    body.retro-theme .dm-switch,
+    body.retro-theme .retro-switch{
+        background:#8b5a2b;
+        color:#f9f5e7;
+        border:1px solid #d2b48c;
+    }
 </style>
 </head>
 <body>
@@ -205,7 +200,6 @@ body.retro-theme .retro-switch{
 
 <div class="container">
 
-    <!-- 경험치 계산기 -->
     <div class="card">
         <h2>경험치 계산기</h2>
 
@@ -233,29 +227,22 @@ body.retro-theme .retro-switch{
         <div class="r" id="exp_result"></div>
     </div>
 
-
-
-    <!-- ─────────────────────────────── -->
-    <!-- 상자 시뮬레이터 -->
-    <!-- ─────────────────────────────── -->
     <div class="card">
-        <h2>상자 시뮬레이터 (무기 / 방어구 / 장신구)</h2>
+        <h2>상자 시뮬레이터 (무기 / 방어구 / 망토 / 장신구)</h2>
 
         <div style="display:flex; gap:20px;">
-
-            <!-- LEFT: 누적 결과 -->
             <div style="flex:1;">
                 <label>누적 결과</label>
                 <div class="r" id="box_accum">아직 없음</div>
                 <button onclick="resetBoxAccum()">누적 초기화</button>
             </div>
 
-            <!-- MID: UI -->
             <div style="flex:1;">
                 <label>부위 선택</label>
-                <select id="box_part" onchange="updateBoxProb()">
+                <select id="box_part" onchange="updateBoxProb(); updateBoxGradeOptions();">
                     <option value="weapon">무기</option>
                     <option value="armor">방어구</option>
+                    <option value="cloak">망토</option>
                     <option value="accessory">장신구</option>
                 </select>
 
@@ -274,36 +261,28 @@ body.retro-theme .retro-switch{
                 <div class="r" id="box_result"></div>
             </div>
 
-            <!-- RIGHT: 확률표 -->
             <div style="flex:1;">
                 <div class="r" id="box_prob"></div>
             </div>
         </div>
     </div>
 
-
-
-    <!-- ─────────────────────────────── -->
-    <!-- 장비 강화 시뮬레이터 -->
-    <!-- ─────────────────────────────── -->
     <div class="card">
         <h2>장비 강화 시뮬레이터</h2>
 
         <div style="display:flex; gap:20px;">
-
-            <!-- LEFT: 통계 -->
             <div style="flex:1;">
                 <label>통계</label>
                 <div class="r" id="upg_stats"></div>
                 <button onclick="resetUpgrade()">초기화</button>
             </div>
 
-            <!-- MID: 강화 UI -->
             <div style="flex:1;">
                 <label>장비 종류</label>
-                <select id="upg_type">
+                <select id="upg_type" onchange="initUpgradeSelects(); updateUpgradeProb();">
                     <option value="weapon">무기 (최대 15강)</option>
                     <option value="armor">방어구 (최대 10강)</option>
+                    <option value="cloak">망토 (최대 10강)</option>
                     <option value="accessory">장신구 (최대 8강)</option>
                 </select>
 
@@ -327,7 +306,6 @@ body.retro-theme .retro-switch{
                 <div class="r" id="upg_log"></div>
             </div>
 
-            <!-- RIGHT: 확률표 -->
             <div style="flex:1;">
                 <label>강화 확률</label>
                 <div class="r" id="upg_prob"></div>
@@ -335,14 +313,6 @@ body.retro-theme .retro-switch{
         </div>
     </div>
 
-
-
-    <!-- ─────────────────────────────── -->
-    <
-
-    <!-- ─────────────────────────────── -->
-    <!-- 상자 + 강화 종합 시뮬레이터 (베타) -->
-    <!-- ─────────────────────────────── -->
     <div class="card">
         <h2>상자 + 강화 종합 시뮬레이터 (베타)</h2>
         <p style="font-size:13px; margin-bottom:8px;">
@@ -353,9 +323,10 @@ body.retro-theme .retro-switch{
         <div style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end;">
             <div>
                 <label>장비 종류</label><br>
-                <select id="tc_part">
+                <select id="tc_part" onchange="updateTotalCostTargetOptions(); updateTcTierOptions();">
                     <option value="weapon">무기</option>
                     <option value="armor">방어구</option>
+                    <option value="cloak">망토</option>
                     <option value="accessory">장신구</option>
                 </select>
             </div>
@@ -363,12 +334,7 @@ body.retro-theme .retro-switch{
             <div>
                 <label>노리는 등급</label><br>
                 <select id="tc_tier">
-                    <option value="X">X</option>
-                    <option value="X+">X+</option>
-                </select>
-                <div style="font-size:11px; color:#6b7280;">
-                    무기가 아닐 때는 자동으로 X만 사용됩니다.
-                </div>
+                    </select>
             </div>
 
             <div>
@@ -412,7 +378,6 @@ body.retro-theme .retro-switch{
         </div>
     </div>
 
-    <!-- ─────────────────────────────── -->
     <div class="card stat-card">
         <h2>스탯 효율 계산기 (딜 + 회피 균형)</h2>
 
@@ -455,419 +420,134 @@ body.retro-theme .retro-switch{
     </div>
 
 </div>
+
 <script>
-
-function runCustomStatTest(){
-    const base = window._statBaseData;
-    if(!base){
-        alert("먼저 위의 스탯 최적화 계산을 한 번 실행해주세요.");
-        return;
-    }
-    const out = document.getElementById("statHypoResult");
-    const strInput = document.getElementById("statHypoStr");
-    const dexInput = document.getElementById("statHypoDex");
-
-    if(!out || !strInput || !dexInput){
-        return;
-    }
-
-    const STR_new = parseFloat(strInput.value);
-    const DEX_new = parseFloat(dexInput.value);
-
-    if(isNaN(STR_new) || isNaN(DEX_new)){
-        out.innerHTML = "STR과 DEX를 숫자로 정확히 입력해주세요.";
-        return;
-    }
-    if(STR_new < 0 || DEX_new < 0){
-        out.innerHTML = "STR과 DEX는 0 이상이어야 합니다.";
-        return;
-    }
-
-    const atk_new   = base.baseAtk   + STR_new * 0.35;
-    const crit_new  = base.baseCrit  + DEX_new * 0.18;
-    const evStatNew = base.baseEvade + DEX_new * 0.18;
-
-    const mult      = avgMultiplierFromCrit(crit_new);
-    const dps       = atk_new * mult;
-
-    const evadeAppliedRaw = (evStatNew <= 0) ? 0 : (evStatNew / (evStatNew + 100)) * 100;
-    const evadeForSurvival = Math.min(evadeAppliedRaw, 50);
-
-    let hitChance = 1 - (evadeForSurvival / 100);
-    if(hitChance < 0.01) hitChance = 0.01;
-
-    const survivalScore = 1 / hitChance;
-    const effScore      = dps * survivalScore;
-
-    const diffEffPercent = ((effScore / base.currentEff) - 1) * 100;
-    const diffEffRounded = Math.round(diffEffPercent * 10) / 10;
-
-    const evadeStr = evadeAppliedRaw.toFixed(2);
-    const atkStr   = atk_new.toFixed(2);
-    const dpsStr   = dps.toFixed(2);
-
-    let msg = "";
-    msg += `어디까지나 정답은 없고, 체감상 실 회피율 50%를 기준으로 합니다.<br>`;
-    msg += `예상 배분 : DEX <b>${DEX_new}</b>, STR <b>${STR_new}</b><br>`;
-    msg += `예상 평균 딜: 약 <b>${dpsStr}</b><br>`;
-    msg += `추천 분배 시 최종 공격력: 약 <b>${atkStr}</b><br>`;
-    msg += `추천 분배 시 최종 회피 수치(X): <b>${evStatNew.toFixed(2)}</b><br>`;
-    msg += `추천 분배 시 실제 회피: 약 <b>${evadeStr}%</b><br>`;
-    msg += `현재 대비 총 효율(DPS×생존) 변화: <b>${diffEffRounded}%</b>` +
-           (diffEffRounded > 0 ? " 증가" : (diffEffRounded < 0 ? " 감소" : " 변화 없음")) + "<br>";
-
-    out.innerHTML = msg;
-}
-
-
-// 상자 + 강화 종합 시뮬레이터
-const BOX_COST_GOLD_C = 200000;
-const BOX_COST_DIA_A  = 3900;
-
-function getScrollCostByPart(part){
-    if(part === "accessory") return 200000; // 장신구
-    return 100000; // 무기, 방어구
-}
-
-// boxRatesByPart, upgradeSuccessRate, maxByType, safeToByType 이미 정의되어 있음
-
-function simulateBoxesForTier(part, boxGrade, targetTier){
-    const table = boxRatesByPart[part][boxGrade];
-    if(!table){
-        return {boxes:0, hit:false};
-    }
-    const entries = Object.entries(table);
-    const totalP  = entries.reduce((s,[,v])=>s+v,0);
-
-    let boxes = 0;
-    while(true){
-        boxes++;
-        let r = Math.random() * totalP;
-        let sum = 0;
-        let got = null;
-        for(const [grade, p] of entries){
-            sum += p;
-            if(r <= sum){
-                got = grade;
-                break;
-            }
-        }
-        if(got === targetTier){
-            return {boxes, hit:true};
-        }
-        if(boxes > 1000000){
-            return {boxes, hit:false};
-        }
-    }
-}
-
-function simulateUpgradeToTarget(part, targetLevel){
-    const maxLv  = maxByType[part];
-    const safeLv = safeToByType[part];
-    let lv = 0;
-    let scrolls = 0;
-    let breaks  = 0;
-
-    if(targetLevel > maxLv) targetLevel = maxLv;
-
-    while(lv < targetLevel){
-        scrolls++;
-        const rate = upgradeSuccessRate(part, lv);
-        const r = Math.random();
-        if(r < rate){
-            lv++;
-            if(lv > maxLv) lv = maxLv;
-        }else{
-            if(lv < safeLv){
-                // 안전 구간: 유지
-            }else{
-                const r2 = Math.random();
-                if(r2 < 1/3){
-                    // 유지
-                }else if(r2 < 2/3){
-                    lv = Math.max(0, lv-1);
-                }else{
-                    lv = 0;
-                    breaks++;
-                }
-            }
-        }
-        if(scrolls > 1000000){
-            break;
-        }
-    }
-    return {scrolls, breaks};
-}
-
-
-function updateTotalCostTargetOptions(){
-    const partSel = document.getElementById("tc_part");
-    const targetSel = document.getElementById("tc_targetLv");
-    if(!partSel || !targetSel) return;
-
-    let maxLv;
-    if(partSel.value === "weapon"){
-        maxLv = maxByType.weapon;
-    }else if(partSel.value === "armor"){
-        maxLv = maxByType.armor;
-    }else{
-        maxLv = maxByType.accessory;
-    }
-
-    const currentVal = parseInt(targetSel.value, 10) || maxLv;
-    targetSel.innerHTML = "";
-    for(let lv = 1; lv <= maxLv; lv++){
-        const opt = document.createElement("option");
-        opt.value = String(lv);
-        opt.textContent = "+" + lv;
-        if(lv === Math.min(currentVal, maxLv)){
-            opt.selected = true;
-        }
-        targetSel.appendChild(opt);
-    }
-}
-function runTotalCostSim(){
-    const partSel = document.getElementById("tc_part");
-    const tierSel = document.getElementById("tc_tier");
-    const boxSel  = document.getElementById("tc_boxGrade");
-    const targetSel = document.getElementById("tc_targetLv");
-    const runsInput = document.getElementById("tc_runs");
-    const out = document.getElementById("tc_result");
-
-    if(!partSel || !tierSel || !boxSel || !targetSel || !runsInput || !out){
-        return;
-    }
-
-    let part = partSel.value;
-    let tier = tierSel.value;
-    const boxGrade = boxSel.value;
-    let targetLevel = parseInt(targetSel.value, 10);
-    let runs = parseInt(runsInput.value, 10);
-
-    if(part !== "weapon"){
-        tier = "X";
-        tierSel.value = "X";
-    }
-
-    if(isNaN(targetLevel) || targetLevel < 1) targetLevel = 10;
-    if(isNaN(runs) || runs < 10) runs = 10;
-    if(runs > 5000) runs = 5000;
-
-    let totalBoxes = 0;
-    let totalScrolls = 0;
-    let totalBreaks  = 0;
-
-    for(let i=0;i<runs;i++){
-        const boxSim = simulateBoxesForTier(part, boxGrade, tier);
-        totalBoxes += boxSim.boxes;
-
-        const upgSim = simulateUpgradeToTarget(part, targetLevel);
-        totalScrolls += upgSim.scrolls;
-        totalBreaks  += upgSim.breaks;
-    }
-
-    const avgBoxes   = totalBoxes / runs;
-    const avgScrolls = totalScrolls / runs;
-    const avgBreaks  = totalBreaks / runs;
-
-    const scrollCost = getScrollCostByPart(part);
-
-    // 정수 기준으로 보여주기 위해 반올림 처리
-    const boxesInt   = Math.round(avgBoxes);
-    const scrollsInt = Math.round(avgScrolls);
-    const breaksInt  = Math.round(avgBreaks);
-
-    const avgScrollGold = scrollsInt * scrollCost;
-
-    let boxCostText = "";
-    if(boxGrade === "C"){
-        const avgBoxGold = boxesInt * BOX_COST_GOLD_C;
-        boxCostText = `평균 상자 비용: 약 <b>${boxesInt.toLocaleString()}개</b> (≈ <b>${avgBoxGold.toLocaleString()} 골드</b>)`;
-    }else{
-        const avgBoxDia = boxesInt * BOX_COST_DIA_A;
-        boxCostText = `평균 상자 비용: 약 <b>${boxesInt.toLocaleString()}개</b> (≈ <b>${avgBoxDia.toLocaleString()} 다이아</b>)`;
-    }
-
-    let msg = "";
-    msg += `장비 종류: <b>${part === "weapon" ? "무기" : (part === "armor" ? "방어구" : "장신구")}</b><br>`;
-    msg += `노리는 등급: <b>${tier}</b>, 상자: <b>${boxGrade} 등급</b>, 목표 강화: <b>+${targetLevel}</b><br><br>`;
-    msg += `${boxCostText}<br>`;
-    msg += `평균 사용 강화 주문서: 약 <b>${scrollsInt.toLocaleString()}장</b> (≈ <b>${avgScrollGold.toLocaleString()} 골드</b>)<br>`;
-    msg += `평균 장비 파괴 횟수: 약 <b>${breaksInt.toLocaleString()}회</b><br>`;
-    msg += `<small>※ 확률 기반 대략적인 평균값입니다. 개별 시도에서는 운에 따라 크게 차이날 수 있습니다.</small>`;
-
-    out.innerHTML = msg;
-}
-
 /* ─────────────────────────────
-   공통: 다크 모드
-   ───────────────────────────── */
-const DARK_KEY = "bladeup_dark_mode";
-
-const RETRO_KEY = "bladeup_retro_theme";
-
-function applyRetroFromStorage(){
-    const v = localStorage.getItem(RETRO_KEY);
-    if(v === "1"){
-        document.body.classList.add("retro-theme");
-    }else{
-        document.body.classList.remove("retro-theme");
-    }
-}
-
-function toggleRetroTheme(){
-    const isRetro = document.body.classList.toggle("retro-theme");
-    localStorage.setItem(RETRO_KEY, isRetro ? "1" : "0");
-}
-
-
-function applyDarkModeFromStorage(){
-    const v = localStorage.getItem(DARK_KEY);
-    if(v === "1"){
-        document.body.classList.add("dark-mode");
-    }else{
-        document.body.classList.remove("dark-mode");
-    }
-}
-
-function toggleDarkMode(){
-    const isDark = document.body.classList.toggle("dark-mode");
-    localStorage.setItem(DARK_KEY, isDark ? "1" : "0");
-}
-
-/* ─────────────────────────────
-   경험치 계산기
-   ───────────────────────────── */
-function expCalc(){
-    const m = Number(document.getElementById("exp_mon").value);      // 표기 몬스터 EXP
-    const n = Number(document.getElementById("exp_shield").value);   // 방패 강화 단계
-    const out = document.getElementById("exp_result");
-
-    if(n === 0){
-        out.innerHTML = "방패 강화 단계를 선택해주세요.";
-        return;
-    }
-
-    const baseExp = m / 1.5;          // PK 50% 포함된 표기 → 원경험치
-    let equipBonus = (n - 4) * 0.1;   // 5강부터 10%씩
-    if(equipBonus < 0) equipBonus = 0;
-
-    const totalMult = 1 + 0.5 + equipBonus; // 1(기본) + 0.5(PK) + 장비
-    const finalExp = Math.floor(baseExp * totalMult);
-
-    function fmtPercent(v){
-        const p = v*100;
-        if(p < 0.0001) return "0%";
-        return Number.isInteger(p) ? p + "%" : p.toFixed(1) + "%";
-    }
-
-    out.innerHTML =
-        "<b>📌 최종 계산 결과</b><br>" +
-        "선택 몬스터 경험치(표기): <b>" + m + "</b><br>" +
-        "원경험치(Base EXP): <b>" + baseExp.toFixed(0) + "</b><br>" +
-        "장비 경험치 보너스: <b>" + fmtPercent(equipBonus) + "</b><br>" +
-        "PK존 보너스: <b>50%</b><br><br>" +
-        "▶ <b>획득 경험치: " + finalExp + "</b><br><br>" +
-        "<b>📘 경험치 공식</b><br>" +
-        "표기 경험치 = 원경험치 × 1.5 (PK 50% 포함)<br>" +
-        "최종 경험치 = 원경험치 × (1 + PK + 장비보너스)";
-}
-
-/* ─────────────────────────────
-   상자 시뮬레이터
+   새로운 상자 확률 데이터 정의
    ───────────────────────────── */
 
-// 무기 확률
+// 1. 무기 상자 확률 (백분율 수치를 확률 비중 값으로 변환 / 100)
 const weaponRates = {
     "D": {
-        "X+":0.000100,"X":0.000200,"SSS+":0.000500,"SSS":0.000800,"SS+":0.001000,"SS":0.002000,
-        "S+":0.010000,"S":0.015000,"A+":0.030000,"A":0.050000,"B":0.070000,"C":0.090000,
-        "D":0.111200,"E":0.223200,"F":0.396000
+        "X+": 0.0001, "X": 0.0002, "SSS+": 0.0005, "SSS": 0.0008, "SS+": 0.001, "SS": 0.002,
+        "S+": 0.01, "S": 0.05, "A+": 0.08, "A": 0.095, "B": 0.1126, "C": 0.12, "D": 0.1278, "E": 0.17, "F": 0.23
     },
     "C": {
-        "X+":0.000200,"X":0.000500,"SSS+":0.001000,"SSS":0.002000,"SS+":0.003000,"SS":0.004000,
-        "S+":0.020000,"S":0.025000,"A+":0.050000,"A":0.070000,"B":0.090000,"C":0.100000,
-        "D":0.148800,"E":0.173200,"F":0.312300
+        "X+": 0.0002, "X": 0.0005, "SSS+": 0.001, "SSS": 0.002, "SS+": 0.01, "SS": 0.02,
+        "S+": 0.07, "S": 0.085, "A+": 0.095, "A": 0.1008, "B": 0.1022, "C": 0.10, "D": 0.1113, "E": 0.127, "F": 0.175
     },
     "B": {
-        "X+":0.005000,"X":0.010000,"SSS+":0.013000,"SSS":0.016000,"SS+":0.020000,"SS":0.021000,
-        "S+":0.048500,"S":0.062300,"A+":0.112100,"A":0.123100,"B":0.082200,"C":0.092000,
-        "D":0.101400,"E":0.112300,"F":0.181100
+        "X+": 0.01, "X": 0.02, "SSS+": 0.026, "SSS": 0.03, "SS+": 0.042, "SS": 0.052,
+        "S+": 0.0485, "S": 0.0623, "A+": 0.1071, "A": 0.1031, "B": 0.0822, "C": 0.092, "D": 0.0814, "E": 0.0923, "F": 0.1511
     },
     "A": {
-        "X+":0.015000,"X":0.023000,"SSS+":0.030000,"SSS":0.032000,"SS+":0.042000,"SS":0.052100,
-        "S+":0.108500,"S":0.142300,"A+":0.101100,"A":0.113200,"B":0.097200,"C":0.056300,
-        "D":0.053200,"E":0.072100,"F":0.062000
+        "XX": 0.0125, "X+": 0.027, "X": 0.035, "SSS+": 0.073, "SSS": 0.072, "SS+": 0.064, "SS": 0.071,
+        "S+": 0.0885, "S": 0.0923, "A+": 0.0723, "A": 0.0711, "B": 0.0827, "C": 0.0563, "D": 0.0522, "E": 0.0681, "F": 0.062
     }
 };
 
-// 방어구
+// 2. 방어구 상자 확률
 const armorRates = {
     "D": {
-        "X":0.0001,"SSS":0.0005,"SS":0.0010,"S":0.0030,"A":0.0130,
-        "B":0.0320,"C":0.0818,"D":0.1721,"E":0.3212,"F":0.3753
+        "X+": 0.00002, "X": 0.0001, "SSS": 0.0005, "SS": 0.001, "S": 0.003, "A": 0.013, "B": 0.032, "C": 0.08178, "E": 0.3212, "D": 0.1721, "F": 0.3756
     },
     "C": {
-        "X":0.0005,"SSS":0.0030,"SS":0.0030,"S":0.0080,"A":0.0292,
-        "B":0.0920,"C":0.1232,"D":0.2167,"E":0.2123,"F":0.3121
+        "X+": 0.0001, "X": 0.0005, "SSS": 0.003, "SS": 0.003, "S": 0.008, "A": 0.0292, "B": 0.092, "C": 0.1232, "D": 0.2167, "E": 0.2123, "F": 0.312
     },
     "B": {
-        "X":0.0050,"SSS":0.0100,"SS":0.0130,"S":0.0350,"A":0.0750,
-        "B":0.1540,"C":0.1572,"D":0.1523,"E":0.1752,"F":0.2233
+        "X+": 0.005, "X": 0.01, "SSS": 0.02, "SS": 0.032, "S": 0.045, "A": 0.075, "B": 0.134, "C": 0.1572, "D": 0.1523, "E": 0.1715, "F": 0.198
     },
     "A": {
-        "X":0.0150,"SSS":0.0230,"SS":0.0450,"S":0.0923,"A":0.1962,
-        "B":0.1802,"C":0.1213,"D":0.1079,"E":0.1120,"F":0.1071
+        "X+": 0.015, "X": 0.027, "SSS": 0.055, "SS": 0.068, "S": 0.0923, "A": 0.1562, "B": 0.1602, "C": 0.1143, "D": 0.1079, "E": 0.1041, "F": 0.10
     }
 };
 
-// 장신구
-const accessoryRates = {
+// 3. 망토 상자 확률 (X+ 없음)
+const cloakRates = {
     "D": {
-        "X":0.0001,"S":0.0010,"A":0.0030,"B":0.0240,"C":0.1003,
-        "D":0.1602,"E":0.3002,"F":0.4112
+        "X": 0.0001, "SSS": 0.0005, "SS": 0.001, "S": 0.003, "A": 0.013, "B": 0.032, "C": 0.08178, "D": 0.1721, "E": 0.3212, "F": 0.3756
     },
     "C": {
-        "X":0.0005,"S":0.0015,"A":0.0100,"B":0.0432,"C":0.1552,
-        "D":0.2443,"E":0.2232,"F":0.3221
+        "X": 0.0005, "SSS": 0.003, "SS": 0.003, "S": 0.008, "A": 0.0292, "B": 0.092, "C": 0.1232, "D": 0.2167, "E": 0.2123, "F": 0.312
     },
     "B": {
-        "X":0.0050,"S":0.0100,"A":0.0250,"B":0.1211,"C":0.1732,
-        "D":0.1922,"E":0.2121,"F":0.2614
+        "X": 0.01, "SSS": 0.02, "SS": 0.032, "S": 0.045, "A": 0.075, "B": 0.134, "C": 0.1572, "D": 0.1523, "E": 0.1715, "F": 0.203
     },
     "A": {
-        "X":0.0150,"S":0.0230,"A":0.0480,"B":0.2221,"C":0.1896,
-        "D":0.1632,"E":0.1821,"F":0.1570
+        "X": 0.027, "SSS": 0.055, "SS": 0.068, "S": 0.0923, "A": 0.1562, "B": 0.1602, "C": 0.1143, "D": 0.1079, "E": 0.112, "F": 0.1071
+    }
+};
+
+// 4. 악세서리 상자 확률
+const accessoryRates = {
+    "D": {
+        "X+": 0.000007, "X": 0.0001, "S": 0.001, "A": 0.003, "B": 0.024, "C": 0.1003, "D": 0.1602, "E": 0.3002, "F": 0.411193
+    },
+    "C": {
+        "X+": 0.00004, "X": 0.0005, "S": 0.01, "A": 0.015, "B": 0.0432, "C": 0.1552, "D": 0.2443, "E": 0.2232, "F": 0.32206
+    },
+    "B": {
+        "X+": 0.005, "X": 0.01, "S": 0.02, "A": 0.05, "B": 0.1211, "C": 0.1732, "D": 0.1922, "E": 0.2121, "F": 0.2164
+    },
+    "A": {
+        "X+": 0.015, "X": 0.027, "S": 0.055, "A": 0.068, "B": 0.2221, "C": 0.1896, "D": 0.1322, "E": 0.1521, "F": 0.139
     }
 };
 
 const boxRatesByPart = {
     weapon: weaponRates,
     armor: armorRates,
+    cloak: cloakRates,
     accessory: accessoryRates
 };
+
 const boxOrder = {
-    weapon: ["X+","X","SSS+","SSS","SS+","SS","S+","S","A+","A","B","C","D","E","F"],
-    armor:  ["X","SSS","SS","S","A","B","C","D","E","F"],
-    accessory: ["X","S","A","B","C","D","E","F"]
+    weapon: ["XX", "X+", "X", "SSS+", "SSS", "SS+", "SS", "S+", "S", "A+", "A", "B", "C", "D", "E", "F"],
+    armor:  ["X+", "X", "SSS", "SS", "S", "A", "B", "C", "D", "E", "F"],
+    cloak:  ["X", "SSS", "SS", "S", "A", "B", "C", "D", "E", "F"],
+    accessory: ["X+", "X", "S", "A", "B", "C", "D", "E", "F"]
 };
+
 const boxLabel = {
-    weapon:"무기",
-    armor:"방어구",
-    accessory:"장신구"
+    weapon: "무기",
+    armor: "방어구",
+    cloak: "망토",
+    accessory: "장신구"
+};
+
+// 안전구간 / 최대강화 세팅수치
+const safeToByType = { weapon: 6, armor: 4, cloak: 4, accessory: 3 };
+const maxByType    = { weapon: 15, armor: 10, cloak: 10, accessory: 8 };
+
+// 주문서 비용 설정
+const BOX_COST_GOLD_C = 200000;
+const BOX_COST_DIA_A  = 3900;
+
+function getScrollCostByPart(part){
+    if(part === "accessory") return 200000;
+    return 100000; // 무기, 방어구, 망토
+}
+
+// 강화 성공 확률 수치 정의
+const successRates = {
+    weapon: { 6:0.60, 7:0.50, 8:0.40, 9:0.30, 10:0.25, 11:0.20, 12:0.15, 13:0.10, 14:0.05 },
+    armor:  { 4:0.40, 5:0.30, 6:0.20, 7:0.15, 8:0.10, 9:0.05 },
+    cloak:  { 4:0.40, 5:0.30, 6:0.20, 7:0.15, 8:0.10, 9:0.05 },
+    accessory: { 3:0.33, 4:0.20, 5:0.13, 6:0.07, 7:0.03 }
 };
 
 let boxAccumCount = {};
 let boxBoxCount   = {D:0, C:0, B:0, A:0};
 
 function boxHighlight(name){
-    if(name==="X+" || name==="X"){
+    if(name==="XX" || name==="X+" || name==="X"){
         return `<span class="yellow-highlight"><b>${name}</b></span>`;
     }
     return `<b>${name}</b>`;
 }
+
 function boxPercent(p){
-    return (p*100).toFixed(3).replace(/0+$/,'').replace(/\.$/,'') + "%";
+    return (p * 100).toFixed(6).replace(/0+$/, '').replace(/\.$/, '') + "%";
 }
 
 function getBoxPart(){ return document.getElementById("box_part").value; }
@@ -879,6 +559,10 @@ function resetBoxAccum(){
     document.getElementById("box_accum").innerHTML = "아직 없음";
 }
 
+function updateBoxGradeOptions() {
+    // 혹시 파트별 상자 제한이 필요하면 확장 가능한 구조 유지
+}
+
 function updateBoxProb(){
     const part  = getBoxPart();
     const grade = getBoxGrade();
@@ -887,17 +571,20 @@ function updateBoxProb(){
 
     let html = `<b>[${boxLabel[part]} ${grade} 등급 박스 확률]</b><br><br>`;
 
-    // X+, X 먼저
-    const specials = [];
-    if(order.includes("X+")) specials.push("X+");
-    if(order.includes("X"))  specials.push("X");
+    if(!table) {
+        html += "해당 등급의 상자 데이터가 없습니다.";
+        document.getElementById("box_prob").innerHTML = html;
+        return;
+    }
 
+    const specials = ["XX", "X+", "X"];
     specials.forEach(g=>{
-        if(table[g] !== undefined){
+        if(order.includes(g) && table[g] !== undefined){
             html += `${boxHighlight(g)} : ${boxPercent(table[g])}<br>`;
         }
     });
-    if(specials.some(g=>table[g]!==undefined)) html += "<br>";
+    
+    if(specials.some(g=>order.includes(g) && table[g]!==undefined)) html += "<br>";
 
     order.filter(g=>!specials.includes(g)).forEach(g=>{
         if(table[g] !== undefined){
@@ -912,12 +599,14 @@ function openBox(times){
     const part  = getBoxPart();
     const grade = getBoxGrade();
     const table = boxRatesByPart[part][grade];
+    if(!table) return;
+
     const entries = Object.entries(table);
     const totalP  = entries.reduce((s,[,v])=>s+v,0);
 
     const resultArr = [];
     for(let i=0;i<times;i++){
-        let r = Math.random()*totalP;
+        let r = Math.random() * totalP;
         let sum = 0;
         for(const [name,p] of entries){
             sum += p;
@@ -928,7 +617,6 @@ function openBox(times){
         }
     }
 
-    // 이번 결과
     const order = boxOrder[part];
     const count = {};
     resultArr.forEach(x=>{
@@ -937,9 +625,7 @@ function openBox(times){
     });
 
     let html = "<b>이번 결과</b><br><br>";
-    const specials = [];
-    if(order.includes("X+")) specials.push("X+");
-    if(order.includes("X"))  specials.push("X");
+    const specials = ["XX", "X+", "X"];
     specials.forEach(g=>{
         if(count[g]) html += `${boxHighlight(g)} : ${count[g]}개<br>`;
     });
@@ -953,7 +639,6 @@ function openBox(times){
     html += line;
     document.getElementById("box_result").innerHTML = html;
 
-    // 누적 반영
     resultArr.forEach(x=>{
         if(!boxAccumCount[x]) boxAccumCount[x]=0;
         boxAccumCount[x]++;
@@ -979,36 +664,13 @@ function openBox(times){
 }
 
 /* ─────────────────────────────
-   장비 강화 시뮬레이터
+   장비 강화 시뮬레이터 엔진 로직
    ───────────────────────────── */
-
-// 안전구간 / 최대강
-const safeToByType = { weapon:6, armor:4, accessory:3 };
-const maxByType    = { weapon:15, armor:10, accessory:8 };
-
-// 성공 확률 (시작 단계 → 다음 단계)
-const successRates = {
-    weapon:{
-        6:0.60, 7:0.50, 8:0.40, 9:0.30,
-        10:0.25, 11:0.20, 12:0.15, 13:0.10, 14:0.05
-    },
-    armor:{
-        4:0.40, 5:0.30, 6:0.20, 7:0.15, 8:0.10, 9:0.05
-    },
-    accessory:{
-        3:0.33, 4:0.20, 5:0.13, 6:0.07, 7:0.03
-    }
-};
-
 let upgTimer = null;
 let upgLoopGuard = 0;
 const UPG_LOOP_MAX = 200000;
 
-let upgStats = {
-    scrolls:0,
-    items:0,
-    perLevel:{}
-};
+let upgStats = { scrolls:0, items:0, perLevel:{} };
 
 function ensureLevelStat(lv){
     if(!upgStats.perLevel[lv]){
@@ -1037,7 +699,6 @@ function upgradeOnce(type, currentLevel){
     const rate = upgradeSuccessRate(type, lv);
     const r = Math.random();
     if(r < rate){
-        // 성공
         lv++;
         if(lv > maxLv) lv = maxLv;
         if(lv-1 >= safeLv){
@@ -1046,7 +707,6 @@ function upgradeOnce(type, currentLevel){
         }
         return {level:lv, text:`+${currentLevel} → <b>성공</b> → +${lv}`, cls:"success", noScroll:false};
     }else{
-        // 실패
         if(lv < safeLv){
             return {level:lv, text:`+${lv} → 실패 (안전구간, 단계 유지)`, cls:"keep", noScroll:false};
         }else{
@@ -1084,7 +744,6 @@ function appendUpgradeLog(msg, cls){
     if(el.firstChild) el.insertBefore(div, el.firstChild);
     else el.appendChild(div);
 
-    // 오래된 로그 삭제
     while(el.children.length > 80){
         el.removeChild(el.lastChild);
     }
@@ -1119,7 +778,7 @@ function updateUpgradeProb(){
     const maxLv  = maxByType[type];
     const box = document.getElementById("upg_prob");
 
-    let label = (type==="weapon"?"무기":type==="armor"?"방어구":"장신구");
+    let label = boxLabel[type] || "장비";
     let html = `<b>[${label} 강화 확률]</b><br><br>`;
 
     for(let lv=0; lv<maxLv; lv++){
@@ -1190,7 +849,7 @@ function startUpgrade(){
         return;
     }
 
-    const baseDelay = 70; // 기본 딜레이
+    const baseDelay = 70;
     const delay = Math.max(4, baseDelay / speed);
 
     upgLoopGuard = 0;
@@ -1208,7 +867,6 @@ function startUpgrade(){
             clearInterval(upgTimer);
             upgTimer = null;
             appendUpgradeLog(`강화 종료: 최종 +${currentLevel} 도달 (목표 +${targetLevel})`, "info");
-            // 현재 단계 select 업데이트
             document.getElementById("upg_now").value = currentLevel;
             return;
         }
@@ -1218,7 +876,6 @@ function startUpgrade(){
         appendUpgradeLog(res.text, res.cls);
         updateUpgradeStatsDisplay();
         document.getElementById("upg_now").value = currentLevel;
-
     }, delay);
 }
 
@@ -1231,9 +888,189 @@ function stopUpgrade(){
 }
 
 /* ─────────────────────────────
-   스탯 효율 계산기 (딜+회피 균형)
+   상자 + 강화 종합 시뮬레이터 (베타 확장)
    ───────────────────────────── */
+function updateTcTierOptions() {
+    const part = document.getElementById("tc_part").value;
+    const tierSel = document.getElementById("tc_tier");
+    if(!tierSel) return;
 
+    tierSel.innerHTML = "";
+    
+    // 신규 추가된 등급 시스템 정렬 적용
+    let options = [];
+    if(part === "weapon") {
+        options = ["XX", "X+", "X"];
+    } else if(part === "cloak") {
+        options = ["X"]; // 망토는 X+ 없음
+    } else {
+        options = ["X+", "X"]; // 방어구, 악세사리
+    }
+
+    options.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t;
+        opt.textContent = t;
+        tierSel.appendChild(opt);
+    });
+}
+
+function updateTotalCostTargetOptions(){
+    const partSel = document.getElementById("tc_part");
+    const targetSel = document.getElementById("tc_targetLv");
+    if(!partSel || !targetSel) return;
+
+    let part = partSel.value;
+    let maxLv = maxByType[part] || 10;
+
+    const currentVal = parseInt(targetSel.value, 10) || maxLv;
+    targetSel.innerHTML = "";
+    for(let lv = 1; lv <= maxLv; lv++){
+        const opt = document.createElement("option");
+        opt.value = String(lv);
+        opt.textContent = "+" + lv;
+        if(lv === Math.min(currentVal, maxLv)){
+            opt.selected = true;
+        }
+        targetSel.appendChild(opt);
+    }
+}
+
+function simulateBoxesForTier(part, boxGrade, targetTier){
+    const table = boxRatesByPart[part][boxGrade];
+    if(!table) return {boxes:0, hit:false};
+    
+    const entries = Object.entries(table);
+    const totalP  = entries.reduce((s,[,v])=>s+v,0);
+
+    let boxes = 0;
+    while(true){
+        boxes++;
+        let r = Math.random() * totalP;
+        let sum = 0;
+        let got = null;
+        for(const [grade, p] of entries){
+            sum += p;
+            if(r <= sum){
+                got = grade;
+                break;
+            }
+        }
+        if(got === targetTier){
+            return {boxes, hit:true};
+        }
+        if(boxes > 5000000){ // 한계 도달 제어 장치 상향
+            return {boxes, hit:false};
+        }
+    }
+}
+
+function simulateUpgradeToTarget(part, targetLevel){
+    const maxLv  = maxByType[part];
+    const safeLv = safeToByType[part];
+    let lv = 0;
+    let scrolls = 0;
+    let breaks  = 0;
+
+    if(targetLevel > maxLv) targetLevel = maxLv;
+
+    while(lv < targetLevel){
+        scrolls++;
+        const rate = upgradeSuccessRate(part, lv);
+        const r = Math.random();
+        if(r < rate){
+            lv++;
+        }else{
+            if(lv >= safeLv){
+                const r2 = Math.random();
+                if(r2 < 1/3){
+                    // 유지
+                }else if(r2 < 2/3){
+                    lv = Math.max(0, lv-1);
+                }else{
+                    lv = 0;
+                    breaks++;
+                }
+            }
+        }
+        if(scrolls > 5000000) break;
+    }
+    return {scrolls, breaks};
+}
+
+function runTotalCostSim(){
+    const partSel = document.getElementById("tc_part");
+    const tierSel = document.getElementById("tc_tier");
+    const boxSel  = document.getElementById("tc_boxGrade");
+    const targetSel = document.getElementById("tc_targetLv");
+    const runsInput = document.getElementById("tc_runs");
+    const out = document.getElementById("tc_result");
+
+    if(!partSel || !tierSel || !boxSel || !targetSel || !runsInput || !out){
+        return;
+    }
+
+    let part = partSel.value;
+    let tier = tierSel.value;
+    const boxGrade = boxSel.value;
+    let targetLevel = parseInt(targetSel.value, 10);
+    let runs = parseInt(runsInput.value, 10);
+
+    if(isNaN(targetLevel) || targetLevel < 1) targetLevel = 10;
+    if(isNaN(runs) || runs < 10) runs = 10;
+    if(runs > 5000) runs = 5000;
+
+    let totalBoxes = 0;
+    let totalScrolls = 0;
+    let totalBreaks  = 0;
+    let failCount = 0;
+
+    for(let i=0;i<runs;i++){
+        const boxSim = simulateBoxesForTier(part, boxGrade, tier);
+        if(!boxSim.hit) failCount++;
+        totalBoxes += boxSim.boxes;
+
+        const upgSim = simulateUpgradeToTarget(part, targetLevel);
+        totalScrolls += upgSim.scrolls;
+        totalBreaks  += upgSim.breaks;
+    }
+
+    const avgBoxes   = totalBoxes / runs;
+    const avgScrolls = totalScrolls / runs;
+    const avgBreaks  = totalBreaks / runs;
+
+    const scrollCost = getScrollCostByPart(part);
+
+    const boxesInt   = Math.round(avgBoxes);
+    const scrollsInt = Math.round(avgScrolls);
+    const breaksInt  = Math.round(avgBreaks);
+
+    const avgScrollGold = scrollsInt * scrollCost;
+
+    let boxCostText = "";
+    if(boxGrade === "C"){
+        const avgBoxGold = boxesInt * BOX_COST_GOLD_C;
+        boxCostText = `평균 상자 비용: 약 <b>${boxesInt.toLocaleString()}개</b> (≈ <b>${avgBoxGold.toLocaleString()} 골드</b>)`;
+    }else{
+        const avgBoxDia = boxesInt * BOX_COST_DIA_A;
+        boxCostText = `평균 상자 비용: 약 <b>${boxesInt.toLocaleString()}개</b> (≈ <b>${avgBoxDia.toLocaleString()} 다이아</b>)`;
+    }
+
+    let msg = "";
+    msg += `장비 종류: <b>${boxLabel[part]}</b><br>`;
+    msg += `노리는 등급: <b>${tier}</b>, 상자: <b>${boxGrade} 등급</b>, 목표 강화: <b>+${targetLevel}</b><br><br>`;
+    msg += `${boxCostText}<br>`;
+    msg += `평균 사용 강화 주문서: 약 <b>${scrollsInt.toLocaleString()}장</b> (≈ <b>${avgScrollGold.toLocaleString()} 골드</b>)<br>`;
+    msg += `평균 장비 파괴 횟수: 약 <b>${breaksInt.toLocaleString()}회</b><br>`;
+    if(failCount > 0) msg += `<small style="color:red;">※ 연산 한계로 획득에 실패한 시뮬레이션이 존재합니다. 목표 등급 확률이 너무 낮을 수 있습니다.</small><br>`;
+    msg += `<small>※ 확률 기반 대략적인 평균값입니다. 개별 시도에서는 운에 따라 크게 차이날 수 있습니다.</small>`;
+
+    out.innerHTML = msg;
+}
+
+/* ─────────────────────────────
+   스탯 효율 계산기 시스템 엔진
+   ───────────────────────────── */
 const STAT_LS_KEY = "bladeup_stat_calc_A_only";
 
 function avgMultiplierFromCrit(crit){
@@ -1273,7 +1110,7 @@ function runStatCalc(){
     const out = document.getElementById("statResult");
 
     if(isNaN(strVal) || isNaN(dexVal) || isNaN(atkVal) || isNaN(critVal) || isNaN(evadeVal)){
-        out.innerHTML = "모든 값을 숫자로 정확히 입력해주세요. (STR, DEX, 공격력, 치명, 회피 수치)";
+        out.innerHTML = "모든 값을 숫자로 정확히 입력해주세요.";
         return;
     }
     if(strVal < 0 || dexVal < 0){
@@ -1283,21 +1120,19 @@ function runStatCalc(){
 
     const totalStat = strVal + dexVal;
     if(totalStat <= 0){
-        out.innerHTML = "총 스탯(STR+DEX)이 0 이하입니다. 값을 다시 확인해주세요.";
+        out.innerHTML = "총 스탯이 0 이하입니다.";
         return;
     }
 
-    // 현재 스탯에서 스탯 기여분을 빼고 "기본" 추정
     const baseAtk   = atkVal   - strVal * 0.35;
     const baseCrit  = critVal  - dexVal * 0.18;
-    const baseEvade = evadeVal - dexVal * 0.18; // 장비/기본 회피 수치
+    const baseEvade = evadeVal - dexVal * 0.18;
 
     function appliedEvade(evStat){
         if(evStat <= 0) return 0;
         return (evStat / (evStat + 100)) * 100;
     }
 
-    // 특정 STR/DEX 배분에서 딜/회피/생존/효율 계산
     function calcAll(STR_new, DEX_new){
         const atk_new   = baseAtk   + STR_new * 0.35;
         const crit_new  = baseCrit  + DEX_new * 0.18;
@@ -1307,43 +1142,23 @@ function runStatCalc(){
         const dps       = atk_new * mult;
 
         const evadeAppliedRaw = appliedEvade(evStatNew);
-        // 효율 계산에서는 실제 회피율을 최대 50%까지만 반영
         const evadeForSurvival = Math.min(evadeAppliedRaw, 50);
 
-        let hitChance = 1 - (evadeForSurvival / 100); // 몬스터 명중 100% 가정
-        if(hitChance < 0.01) hitChance = 0.01;        // 너무 낮으면 바닥값 1%
+        let hitChance = 1 - (evadeForSurvival / 100);
+        if(hitChance < 0.01) hitChance = 0.01;
 
         const survivalScore = 1 / hitChance;
         const effScore      = dps * survivalScore;
 
-        return {
-            dps,
-            atk: atk_new,
-            crit: crit_new,
-            evStat: evStatNew,
-            evadeApplied: evadeAppliedRaw,
-            survivalScore,
-            effScore
-        };
+        return { dps, atk: atk_new, crit: crit_new, evStat: evStatNew, evadeApplied: evadeAppliedRaw, survivalScore, effScore };
     }
 
-    // 현재 상태
     const current = calcAll(strVal, dexVal);
     const currentDps = current.dps;
     const currentEff = current.effScore;
 
-    // 가상 배분 테스트를 위한 기준 데이터 저장
-    window._statBaseData = {
-        baseAtk,
-        baseCrit,
-        baseEvade,
-        totalStat,
-        currentEff,
-        currentDps,
-        currentEvadeApplied: current.evadeApplied
-    };
+    window._statBaseData = { baseAtk, baseCrit, baseEvade, totalStat, currentEff, currentDps, currentEvadeApplied: current.evadeApplied };
 
-    // 딜+생존 균형 기준 최적 탐색
     let bestEff      = -Infinity;
     let bestEffDex   = dexVal;
     let bestEffData  = null;
@@ -1363,9 +1178,8 @@ function runStatCalc(){
     const diffEffPercent = ((bestEff / currentEff) - 1) * 100;
     const diffEffRounded = Math.round(diffEffPercent * 10) / 10;
 
-    // 포인트당 STR / DEX 딜 효율 & 회피 효율 (현재 위치 기준)
     const multCritNow = avgMultiplierFromCrit(critVal);
-    const deltaDStr   = 0.35 * multCritNow; // STR 1 → 공격력 +0.35
+    const deltaDStr   = 0.35 * multCritNow;
 
     const multCritDex = avgMultiplierFromCrit(critVal + 0.18);
     const deltaDDex   = atkVal * (multCritDex - multCritNow);
@@ -1377,66 +1191,71 @@ function runStatCalc(){
     const appliedAfter  = appliedEvade(evAfter);
     const diffApplied   = appliedAfter - appliedBefore;
 
-    const evBeforeStr  = isFinite(appliedBefore) ? appliedBefore.toFixed(2) : "0.00";
-    const evAfterStr   = isFinite(appliedAfter)  ? appliedAfter.toFixed(2)  : "0.00";
-    const evDiffStr    = isFinite(diffApplied)   ? diffApplied.toFixed(3)   : "0.000";
-
     let ratioText = "";
     if(deltaDDex > 0){
         const ratio = deltaDStr / deltaDDex;
-        const ratioRound = Math.round(ratio * 10) / 10;
-        ratioText = `(현재 기준 STR 1포인트가 DEX 1포인트보다 약 <b>${ratioRound}</b>배 정도 딜 효율이 높습니다.)`;
+        ratioText = `(현재 기준 STR 1포인트가 DEX 1포인트보다 약 <b>${Math.round(ratio * 10) / 10}</b>배 정도 딜 효율이 높습니다.)`;
     }
 
-    // 입력값 저장
     saveStatInputs(strVal, dexVal, atkVal, critVal, evadeVal);
 
-    // 결과 출력
     let msg = "";
+    msg += `<b>현재 배분</b><br>STR: <b>${strVal}</b>, DEX: <b>${dexVal}</b><br>평균 딜: 약 <b>${currentDps.toFixed(2)}</b><br>실제 적용 회피: 약 <b>${current.evadeApplied.toFixed(2)}%</b><br><br>`;
+    msg += `<b>포인트당 효율 (현재 스탯 기준)</b><br>STR 1 찍으면: 평균 딜 약 <b>${deltaDStr.toFixed(3)}</b> 증가<br>DEX 1 찍으면: 평균 딜 약 <b>${deltaDDex.toFixed(3)}</b> 증가<br>${ratioText}<br><br>`;
+    msg += `<b>DEX 1포인트의 회피 효율</b><br>표기 회피 수치: <b>${evBefore.toFixed(2)} → ${evAfter.toFixed(2)}</b> ( +0.18 )<br>실제 적용 회피: <b>${appliedBefore.toFixed(2)}% → ${appliedAfter.toFixed(2)}%</b><br>⇒ 실제로는 약 <b>${diffApplied.toFixed(3)}%p</b> 정도만 회피가 늘어납니다.<br><br>`;
+    msg += `<b>딜 + 생존(회피) 균형 최적 배분</b><br>추천 배분: DEX <b>${bestEffDex}</b>, STR: <b>${bestEffStr}</b><br>예상 평균 딜: 약 <b>${bestEffData.dps.toFixed(2)}</b><br>추천 분배 시 실제 회피: 약 <b>${bestEffData.evadeApplied.toFixed(2)}%</b><br>현재 대비 총 효율 변화: <b>${diffEffRounded}%</b> ${diffEffRounded > 0 ? "증가" : "변화 없음"}<br><br>`;
 
-    // 현재 상태
-    msg += `<b>현재 배분</b><br>`;
-    msg += `STR: <b>${strVal}</b>, DEX: <b>${dexVal}</b><br>`;
-    msg += `평균 딜: 약 <b>${currentDps.toFixed(2)}</b><br>`;
-    msg += `실제 적용 회피: 약 <b>${current.evadeApplied.toFixed(2)}%</b><br><br>`;
-
-    // 포인트당 효율
-    msg += `<b>포인트당 효율 (현재 스탯 기준)</b><br>`;
-    msg += `STR 1 찍으면: 평균 딜 약 <b>${deltaDStr.toFixed(3)}</b> 증가<br>`;
-    msg += `DEX 1 찍으면: 평균 딜 약 <b>${deltaDDex.toFixed(3)}</b> 증가<br>`;
-    msg += ratioText ? (ratioText + "<br><br>") : "<br>";
-
-    // DEX 1포인트 회피 효율
-    msg += `<b>DEX 1포인트의 회피 효율</b><br>`;
-    msg += `표기 회피 수치: <b>${evBefore.toFixed(2)} → ${evAfter.toFixed(2)}</b> ( +0.18 )<br>`;
-    msg += `실제 적용 회피: <b>${evBeforeStr}% → ${evAfterStr}%</b><br>`;
-    msg += `⇒ 실제로는 약 <b>${evDiffStr}%p</b> 정도만 회피가 늘어납니다.<br><br>`;
-
-    // 딜+생존 균형 기준 최적 배분
-    msg += `<b>딜 + 생존(회피) 균형 기준 최적 배분</b><br>`;
-    msg += `추천 배분: DEX <b>${bestEffDex}</b>, STR <b>${bestEffStr}</b><br>`;
-    msg += `예상 평균 딜: 약 <b>${bestEffData.dps.toFixed(2)}</b><br>`;
-    msg += `추천 분배 시 최종 공격력: 약 <b>${bestEffData.atk.toFixed(2)}</b><br>`;
-    msg += `추천 분배 시 최종 회피 수치(X): <b>${bestEffData.evStat.toFixed(2)}</b><br>`;
-    msg += `추천 분배 시 실제 회피: 약 <b>${bestEffData.evadeApplied.toFixed(2)}%</b><br>`;
-    msg += `현재 대비 총 효율(DPS×생존) 변화: <b>${diffEffRounded}%</b>${diffEffRounded > 0 ? " 증가" : (diffEffRounded < 0 ? " 감소" : " 변화 없음")}<br><br>`;
-
-    // 가상 스탯 배분 테스트 UI
-    msg += `<hr><b>가상 스탯 배분 테스트</b><br>`;
-    msg += `어디까지나 정답은 없고, 체감상 실 회피율 50%를 기준으로 합니다.<br>`;
-    msg += `아래 STR / DEX 값을 수정해 보며, 가상 배분 효율을 확인해 보세요.<br>`;
-    msg += `STR: <input type="number" id="statHypoStr" value="${bestEffStr}" style="width:80px"> `;
-    msg += `DEX: <input type="number" id="statHypoDex" value="${bestEffDex}" style="width:80px"> `;
-    msg += `<button type="button" onclick="runCustomStatTest()">가상 배분 계산</button><br>`;
-    msg += `<div id="statHypoResult" style="margin-top:8px;"></div><br>`;
-    msg += `<small>※ 이 계산기는 <b>딜(공격력×치명)</b>과 회피 공식(회피/(회피+100))을 함께 사용해, 몬스터 명중률을 100%로 가정한 상대적인 "딜×생존" 효율이 최대가 되는 STR/DEX 배분을 찾습니다. CON은 계산에서 제외했습니다.</small>`;
-
+    msg += `<hr><b>가상 스탯 배분 테스트</b><br>STR: <input type="number" id="statHypoStr" value="${bestEffStr}" style="width:80px"> DEX: <input type="number" id="statHypoDex" value="${bestEffDex}" style="width:80px"> <button type="button" onclick="runCustomStatTest()">가상 배분 계산</button><br><div id="statHypoResult" style="margin-top:8px;"></div>`;
     out.innerHTML = msg;
 }
 
+function runCustomStatTest(){
+    const base = window._statBaseData;
+    if(!base){ alert("먼저 위의 스탯 최적화 계산을 한 번 실행해주세요."); return; }
+    const out = document.getElementById("statHypoResult");
+    const STR_new = parseFloat(document.getElementById("statHypoStr").value);
+    const DEX_new = parseFloat(document.getElementById("statHypoDex").value);
+
+    if(isNaN(STR_new) || isNaN(DEX_new)) return;
+
+    const atk_new   = base.baseAtk   + STR_new * 0.35;
+    const crit_new  = base.baseCrit  + DEX_new * 0.18;
+    const evStatNew = base.baseEvade + DEX_new * 0.18;
+
+    const dps = atk_new * avgMultiplierFromCrit(crit_new);
+    const evadeAppliedRaw = (evStatNew <= 0) ? 0 : (evStatNew / (evStatNew + 100)) * 100;
+    const evadeForSurvival = Math.min(evadeAppliedRaw, 50);
+
+    let hitChance = 1 - (evadeForSurvival / 100);
+    if(hitChance < 0.01) hitChance = 0.01;
+
+    const effScore = dps * (1 / hitChance);
+    const diffEffPercent = ((effScore / base.currentEff) - 1) * 100;
+
+    out.innerHTML = `예상 배분 : DEX <b>${DEX_new}</b>, STR <b>${STR_new}</b><br>예상 평균 딜: 약 <b>${dps.toFixed(2)}</b><br>실제 회피: 약 <b>${evadeAppliedRaw.toFixed(2)}%</b><br>현재 대비 총 효율 변화: <b>${diffEffPercent.toFixed(1)}%</b>${diffEffPercent > 0 ? " 증가" : " 감소"}`;
+}
+
 /* ─────────────────────────────
-   초기 실행
+   공통 테마 제어 및 초기화
    ───────────────────────────── */
+const DARK_KEY = "bladeup_dark_mode";
+const RETRO_KEY = "bladeup_retro_theme";
+
+function applyRetroFromStorage(){
+    if(localStorage.getItem(RETRO_KEY) === "1") document.body.classList.add("retro-theme");
+}
+function toggleRetroTheme(){
+    const isRetro = document.body.classList.toggle("retro-theme");
+    localStorage.setItem(RETRO_KEY, isRetro ? "1" : "0");
+}
+function applyDarkModeFromStorage(){
+    if(localStorage.getItem(DARK_KEY) === "1") document.body.classList.add("dark-mode");
+}
+function toggleDarkMode(){
+    const isDark = document.body.classList.toggle("dark-mode");
+    localStorage.setItem(DARK_KEY, isDark ? "1" : "0");
+}
+
 window.addEventListener("load", ()=>{
     applyDarkModeFromStorage();
     applyRetroFromStorage();
@@ -1445,13 +1264,14 @@ window.addEventListener("load", ()=>{
     updateUpgradeStatsDisplay();
     updateUpgradeProb();
     loadStatInputs();
+    updateTcTierOptions();
     updateTotalCostTargetOptions();
-    const partSel = document.getElementById("tc_part");
-    if(partSel){
-        partSel.addEventListener("change", updateTotalCostTargetOptions);
-    }
+    
+    document.getElementById("tc_part").addEventListener("change", () => {
+        updateTcTierOptions();
+        updateTotalCostTargetOptions();
+    });
 });
 </script>
-
 </body>
 </html>
